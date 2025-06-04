@@ -19,7 +19,7 @@ public class Room {
     @Column(name = "availability")
     Boolean availability;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reservation> reservations=new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)

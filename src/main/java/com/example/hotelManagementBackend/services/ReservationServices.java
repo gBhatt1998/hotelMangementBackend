@@ -1,13 +1,16 @@
 package com.example.hotelManagementBackend.services;
 
+import com.example.hotelManagementBackend.entities.Reservation;
 import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.entities.RoomType;
+import com.example.hotelManagementBackend.repositories.ReservationRepository;
 import com.example.hotelManagementBackend.repositories.RoomRepository;
 import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -16,6 +19,10 @@ public class ReservationServices {
     private RoomRepository roomRepo;
     @Autowired
     private RoomTypeRepository roomTypeRepo;
+    @Autowired
+    private ReservationRepository reservationRepo;
+    @Autowired
+    private AnalyzeReservation analyzeReservation;
 
 
     public RoomType createRoomType( RoomType roomType){
@@ -48,8 +55,15 @@ public class ReservationServices {
         }
     }
 
-    public List<Room> isAvailableRoom(){
+    public List<Room> findByAvailabilityWithDetails(){
         return roomRepo.findAllByAvailability(true);
     }
+
+    public List<Reservation> getAllReservations() {
+        return reservationRepo.findAll();
+    }
+
+
+
 
 }

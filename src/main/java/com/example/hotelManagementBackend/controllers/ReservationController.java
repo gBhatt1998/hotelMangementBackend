@@ -1,6 +1,7 @@
 package com.example.hotelManagementBackend.controllers;
 
 
+import com.example.hotelManagementBackend.entities.Reservation;
 import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.entities.RoomType;
 import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
@@ -52,6 +53,11 @@ public class ReservationController {
 
     @GetMapping("/isAvailable")
     public List<Room> isAvailable(){
-        return rs.isAvailableRoom();
+        return rs.findByAvailabilityWithDetails();
+    }
+
+    @GetMapping("/allReservation")
+    public List<Reservation> getAllReservations() {
+        return rs.getAllReservations();
     }
 }
