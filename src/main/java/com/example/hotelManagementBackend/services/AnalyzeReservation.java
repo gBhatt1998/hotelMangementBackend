@@ -1,6 +1,7 @@
 package com.example.hotelManagementBackend.services;
 
 import com.example.hotelManagementBackend.entities.RoomType;
+import com.example.hotelManagementBackend.repositories.RoomRepository;
 import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,11 @@ public class AnalyzeReservation {
     @Autowired
     private RoomTypeRepository roomTypeRepo;
 
+    @Autowired
+    private RoomRepository roomRepo;
+
     private Map<Integer, Map<String, Object>> roomTypeDataMap;
+
     @PostConstruct
     public void initializeRoomTypeMap() {
         List<RoomType> roomTypes = roomTypeRepo.findAll();
@@ -25,17 +30,20 @@ public class AnalyzeReservation {
         roomTypeDataMap = new HashMap<>();
 
         for (RoomType roomType : roomTypes) {
-            Map<String, Object> typeDetails = new HashMap<>();
-            typeDetails.put("id", roomType.getId());
-            typeDetails.put("type", roomType.getType());
-            typeDetails.put("description", roomType.getDescription());
-            typeDetails.put("pricePerNight", roomType.getPricePerNight());
+            Map<String, Object> roomTypeDetails = new HashMap<>();
+            roomTypeDetails.put("id", roomType.getId());
+            roomTypeDetails.put("type", roomType.getType());
+            roomTypeDetails.put("description", roomType.getDescription());
+            roomTypeDetails.put("pricePerNight", roomType.getPricePerNight());
 
-            roomTypeDataMap.put(roomType.getId(), typeDetails);
+            roomTypeDataMap.put(roomType.getId(), roomTypeDetails);
         }
 
         System.out.println("RoomType data map initialized:");
         System.out.println(roomTypeDataMap);
+
+        System.out.println("list of room number");
+        System.out.println(roomRepo.findAllAvailableRoom());
     }
 
     public Map<Integer, Map<String, Object>> getRoomTypeDataMap() {

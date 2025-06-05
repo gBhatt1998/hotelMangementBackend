@@ -17,4 +17,10 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
             "LEFT JOIN FETCH res.guest " +
             "WHERE r.availability = :availability")
     List<Room> findByAvailabilityWithDetails(@Param("availability") boolean availability);
+
+
+    @Query("SELECT r.roomNo FROM Room r "+
+    "WHERE r.availability = true")
+    List<Integer> findAllAvailableRoom();
+
 }
