@@ -1,11 +1,14 @@
 package com.example.hotelManagementBackend.controllers;
 
 
+import com.example.hotelManagementBackend.dto.ReservationRequest;
 import com.example.hotelManagementBackend.dto.RoomTypeWithSingleRoomDTO;
 import com.example.hotelManagementBackend.entities.Reservation;
 import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.entities.RoomType;
 import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
+import com.example.hotelManagementBackend.services.ConfirmReservationService;
+import com.example.hotelManagementBackend.services.PopulateEveryRoomType;
 import com.example.hotelManagementBackend.services.ReservationServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,6 +30,12 @@ public class ReservationController {
 
     @Autowired
     private RoomTypeRepository roomTypeRepository;
+
+    @Autowired
+    private PopulateEveryRoomType populateEveryRoomType;
+
+    @Autowired
+    private ConfirmReservationService confirmReservationService;
 
 
     @GetMapping("/test")
@@ -67,6 +76,8 @@ public class ReservationController {
 
     @GetMapping("/allAvailableRooms")
     public List<RoomTypeWithSingleRoomDTO> getRoomTypesWithSingleRoom() {
+        // Reset the map
+        populateEveryRoomType.resetRoomMap();
         return rs.getAvailableRoom();
     }
 
@@ -75,11 +86,19 @@ public class ReservationController {
             @RequestParam("checkIn") String checkInStr,
             @RequestParam("checkOut") String checkOutStr) {
         try {
-            Date checkIn = Date.valueOf(checkInStr); // Parses "yyyy-MM-dd"
+            Date checkIn = Date.valueOf(checkInStr); // "yyyy-MM-dd"
             Date checkOut = Date.valueOf(checkOutStr);
+            populateEveryRoomType.resetRoomMap();
             return rs.getAvailableRoomOutsideDateRange(checkIn, checkOut);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date format. Use yyyy-MM-dd.");
         }
+    }
+
+    @PostMapping("/confirmReservation")
+    public ResponseEntity<Reservation> createReservation(
+            @RequestBody ReservationRequest request) {
+        Reservation reservation = confirmReservationService.createReservation(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservation);
     }
 }

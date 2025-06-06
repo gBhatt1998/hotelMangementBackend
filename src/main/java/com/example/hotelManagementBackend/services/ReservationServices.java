@@ -74,6 +74,7 @@ public class ReservationServices {
 
    public List<RoomTypeWithSingleRoomDTO> getAvailableRoom()
    {
+//       populateEveryRoomType.resetRoomMap();
        return connectEveryRoomTypeWithDTO.getRoomTypesWithOneRoom();
    }
 

@@ -11,13 +11,12 @@ import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
-    @Query("SELECT r FROM Room r WHERE " +
-            "NOT EXISTS (SELECT res FROM Reservation res WHERE res.room = r) OR " +
-            "NOT EXISTS (SELECT res FROM Reservation res WHERE res.room = r AND " +
-            "           (res.checkInDate BETWEEN :checkIn AND :checkOut OR " +
-            "            res.checkOutDate BETWEEN :checkIn AND :checkOut OR " +
-            "            (res.checkInDate <= :checkIn AND res.checkOutDate >= :checkOut)))")
-    List<Room> findAvailableRoomsByDateRange(
-            @Param("checkIn") Date checkIn,
-            @Param("checkOut") Date checkOut);
+//    @Query("SELECT r FROM Room r WHERE r.availability = true AND NOT EXISTS (" +
+//            "SELECT rs FROM Reservation rs WHERE rs.room = r. AND " +
+//            "rs.checkInDate < :checkOut AND rs.checkOutDate > :checkIn)")
+//    List<Room> findAvailableRoomsByDateRange(
+//            @Param("checkIn") Date checkIn,
+//            @Param("checkOut") Date checkOut);
+
+
 }

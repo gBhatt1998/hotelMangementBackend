@@ -19,14 +19,14 @@ import java.util.stream.Collectors;
 public class PopulateEveryRoomType {
 
 
-    private final HashMap<Integer, Stack<Integer>> mapOfEveryRoomNoInStack;
+    private final HashMap<Integer, List<Integer>> mapOfRoomTypeToRooms;
     private final RoomRepository roomRepo;
     private final ReservationRepository reservationRepo;
 
     public PopulateEveryRoomType(RoomRepository roomRepo, ReservationRepository reservationRepo) {
         this.roomRepo = roomRepo;
         this.reservationRepo = reservationRepo;
-        this.mapOfEveryRoomNoInStack = new HashMap<>();
+        this.mapOfRoomTypeToRooms = new HashMap<>();
     }
     List<Integer> allRoomNo;
 
@@ -39,53 +39,51 @@ public class PopulateEveryRoomType {
 
             int roomType = roomNo / 100;
 
-            mapOfEveryRoomNoInStack.computeIfAbsent(roomType, k -> new Stack<>()).push(roomNo);
+            mapOfRoomTypeToRooms.computeIfAbsent(roomType, k -> new ArrayList<>()).add(roomNo);
         }
 
         System.out.print("map of every room number in its type");
 
-        System.out.print(mapOfEveryRoomNoInStack);
+        System.out.print(mapOfRoomTypeToRooms);
 
         System.out.println("list of room with one type each");
 
 //        System.out.println(getOneRoomPerTypeAndPop());
     }
-
-    public List<Integer> getOneRoomPerTypeAndPop() {
-        List<Integer> result = new ArrayList<>();
-        for (Stack<Integer> stack : mapOfEveryRoomNoInStack.values()) {
-            if (!stack.isEmpty()) {
-                result.add(stack.pop());
-            }
-        }
-        return result;
+    public void resetRoomMap() {
+        mapOfRoomTypeToRooms.clear();
+        getRoomNumber();
     }
-
-    private  List<Integer> roomsOutOfStoredDateRange(Date checkIn, Date checkOut){
-        List<Room> availableRooms = reservationRepo.findAvailableRoomsByDateRange(checkIn, checkOut);
-
-        // Extract room numbers
-        return availableRooms.stream()
-                .map(Room::getRoomNo)
+    public List<Integer> getOneRoomPerTypeAndPop() {
+        return mapOfRoomTypeToRooms.values().stream()
+                .filter(list -> !list.isEmpty())
+                .map(list -> list.get(0)) // Get first room without removing
                 .collect(Collectors.toList());
     }
 
+//    private  List<Integer> roomsOutOfStoredDateRange(Date checkIn, Date checkOut){
+////        List<Room> availableRooms = roomRepo.findAvailableRoomsByDateRange(checkIn, checkOut);
+//
+//        // Extract room numbers
+//        return availableRooms.stream()
+//                .map(Room::getRoomNo)
+//                .collect(Collectors.toList());
+//    }
+
     public void updateRooms(Date checkIn, Date checkOut) {
-        List<Integer> additionalRooms = roomsOutOfStoredDateRange(checkIn, checkOut);
-        if (!additionalRooms.isEmpty()) {
-            additionalRooms.forEach(roomNo -> {
-                if (!allRoomNo.contains(roomNo)) { // Avoid duplicates
-                    allRoomNo.add(roomNo);
-                    int roomType = roomNo / 100;
-                    mapOfEveryRoomNoInStack
-                            .computeIfAbsent(roomType, k -> new Stack<>())
-                            .push(roomNo);
-                }
-            });
-            System.out.println("Updated stack with new rooms: " + mapOfEveryRoomNoInStack);
-        }
+//        refeshRoomNoList();
+        List<Integer> additionalRooms = roomRepo.findAvailableRoomsByDateRange(checkIn, checkOut);
+        additionalRooms.forEach(roomNo -> {
+            int roomType = roomNo / 100;
+            List<Integer> typeRooms = mapOfRoomTypeToRooms.computeIfAbsent(roomType, k -> new ArrayList<>());
+
+            if (!typeRooms.contains(roomNo)) {
+                typeRooms.add(roomNo);
+                System.out.println("Added room " + roomNo + " for type " + roomType);
+            }
+        });
     }
 
 
+    }
 
-}

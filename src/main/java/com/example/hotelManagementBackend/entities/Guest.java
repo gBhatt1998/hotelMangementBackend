@@ -3,6 +3,7 @@ package com.example.hotelManagementBackend.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 @Data
 @Entity
@@ -10,26 +11,53 @@ public class Guest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int Id;
+    int id;
 
+    @Column(name = "name")
     String name;
 
+    @Column(name = "email",nullable = false,unique = true)
+    String email;
+
+    @Column(name="password")
     String password;
 
+    @Column(name = "phone")
     String  phone;
 
+    @Column(name="role")
     String role;
 
 
     @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL)
-    private List<Reservation> reservations;
+    private List<Reservation> reservations=new ArrayList<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "guest_service", // Join table name
+            joinColumns = @JoinColumn(name = "guest_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<Service> services = new ArrayList<>();
+
+    public void addService(Service service) {
+        if (!this.services.contains(service)) {
+            this.services.add(service);
+            service.getGuests().add(this);
+        }
+    }
+
+//    public void removeService(Service service) {
+//        services.remove(service);
+//        service.getGuests().remove(this);
+//    }
 
     public int getId() {
-        return Id;
+        return id;
     }
 
     public void setId(int id) {
-        Id = id;
+        id = id;
     }
 
     public String getName() {
@@ -54,6 +82,22 @@ public class Guest {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<Service> getServices() {
+        return services;
+    }
+
+    public void setServices(List<Service> services) {
+        this.services = services;
     }
 
     public String getRole() {

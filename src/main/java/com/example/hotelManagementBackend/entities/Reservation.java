@@ -14,6 +14,7 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int reservationId;
 
+    @Column(name = "checkInDate")
     Date checkInDate;
 
     Date checkOutDate;

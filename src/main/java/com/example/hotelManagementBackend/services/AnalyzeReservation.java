@@ -57,4 +57,5 @@ public class AnalyzeReservation {
     public void refreshRoomTypeData() {
         initializeRoomTypeMap();
     }
+
 }
