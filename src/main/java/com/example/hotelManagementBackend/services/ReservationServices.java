@@ -1,5 +1,6 @@
 package com.example.hotelManagementBackend.services;
 
+import com.example.hotelManagementBackend.dto.RoomTypeWithSingleRoomDTO;
 import com.example.hotelManagementBackend.entities.Reservation;
 import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.entities.RoomType;
@@ -9,6 +10,7 @@ import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +25,12 @@ public class ReservationServices {
     private ReservationRepository reservationRepo;
     @Autowired
     private AnalyzeReservation analyzeReservation;
+
+    @Autowired
+    private ConnectEveryRoomTypeWithDTO connectEveryRoomTypeWithDTO;
+
+    @Autowired
+    private PopulateEveryRoomType populateEveryRoomType;
 
 
     public RoomType createRoomType( RoomType roomType){
@@ -64,6 +72,18 @@ public class ReservationServices {
     }
 
 
+   public List<RoomTypeWithSingleRoomDTO> getAvailableRoom()
+   {
+       return connectEveryRoomTypeWithDTO.getRoomTypesWithOneRoom();
+   }
+
+
+    public List<RoomTypeWithSingleRoomDTO> getAvailableRoomOutsideDateRange(Date checkIn ,Date checkOut)
+    {
+        populateEveryRoomType.updateRooms(checkIn,checkOut);
+        return getAvailableRoom();
+    }
+//
 
 
 }
