@@ -9,7 +9,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+//@Data
 @Entity
 @Table(name = "room_type")
 public class RoomType {

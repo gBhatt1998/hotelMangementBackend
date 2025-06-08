@@ -1,89 +1,78 @@
 package com.example.hotelManagementBackend.services;
 
+import com.example.hotelManagementBackend.Exception.RoomNotAvailableException;
 import com.example.hotelManagementBackend.dto.RoomTypeWithSingleRoomDTO;
-import com.example.hotelManagementBackend.entities.Room;
-import com.example.hotelManagementBackend.repositories.ReservationRepository;
 import com.example.hotelManagementBackend.repositories.RoomRepository;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Stack;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Component
 public class PopulateEveryRoomType {
 
-
-    private final HashMap<Integer, List<Integer>> mapOfRoomTypeToRooms;
     private final RoomRepository roomRepo;
-    private final ReservationRepository reservationRepo;
+    private final ConnectEveryRoomTypeWithDTO connectDTO;
 
-    public PopulateEveryRoomType(RoomRepository roomRepo, ReservationRepository reservationRepo) {
+    public PopulateEveryRoomType(RoomRepository roomRepo, ConnectEveryRoomTypeWithDTO connectDTO) {
         this.roomRepo = roomRepo;
-        this.reservationRepo = reservationRepo;
-        this.mapOfRoomTypeToRooms = new HashMap<>();
+        this.connectDTO = connectDTO;
     }
-    List<Integer> allRoomNo;
 
-    @PostConstruct
-    public void getRoomNumber() {
-        allRoomNo = roomRepo.findAllAvailableRoom();
+    //  Get one available room per room type without date filter
+    public List<RoomTypeWithSingleRoomDTO> getAvailableRoom() {
+        List<Integer> availableRoomNumbers = roomRepo.findOneRoomNoPerRoomType();
 
-
-        for (Integer roomNo : allRoomNo) {
-
-            int roomType = roomNo / 100;
-
-            mapOfRoomTypeToRooms.computeIfAbsent(roomType, k -> new ArrayList<>()).add(roomNo);
+        if (availableRoomNumbers.isEmpty()) {
+            throw new RoomNotAvailableException("No available rooms found.");
         }
 
-        System.out.print("map of every room number in its type");
-
-        System.out.print(mapOfRoomTypeToRooms);
-
-        System.out.println("list of room with one type each");
-
-//        System.out.println(getOneRoomPerTypeAndPop());
-    }
-    public void resetRoomMap() {
-        mapOfRoomTypeToRooms.clear();
-        getRoomNumber();
-    }
-    public List<Integer> getOneRoomPerTypeAndPop() {
-        return mapOfRoomTypeToRooms.values().stream()
-                .filter(list -> !list.isEmpty())
-                .map(list -> list.get(0)) // Get first room without removing
-                .collect(Collectors.toList());
+        // Convert room numbers to DTOs
+        return connectDTO.getRoomTypesWithOneRoom(availableRoomNumbers);
     }
 
-//    private  List<Integer> roomsOutOfStoredDateRange(Date checkIn, Date checkOut){
-////        List<Room> availableRooms = roomRepo.findAvailableRoomsByDateRange(checkIn, checkOut);
-//
-//        // Extract room numbers
-//        return availableRooms.stream()
-//                .map(Room::getRoomNo)
-//                .collect(Collectors.toList());
-//    }
+    //Get one available room per room type considering date range
+    public List<RoomTypeWithSingleRoomDTO> getAvailableRoomOutsideDateRange(Date checkIn, Date checkOut) {
+        // Step 1: Get available rooms without date filter
+        List<RoomTypeWithSingleRoomDTO> defaultRoomList = getAvailableRoom();
 
-    public void updateRooms(Date checkIn, Date checkOut) {
-//        refeshRoomNoList();
-        List<Integer> additionalRooms = roomRepo.findAvailableRoomsByDateRange(checkIn, checkOut);
-        additionalRooms.forEach(roomNo -> {
-            int roomType = roomNo / 100;
-            List<Integer> typeRooms = mapOfRoomTypeToRooms.computeIfAbsent(roomType, k -> new ArrayList<>());
+        // Step 2: Store already covered room type IDs
+        Set<Integer> coveredRoomTypeIds = new HashSet<>();
+        for (RoomTypeWithSingleRoomDTO room : defaultRoomList) {
+            coveredRoomTypeIds.add(room.getId());
+        }
 
-            if (!typeRooms.contains(roomNo)) {
-                typeRooms.add(roomNo);
-                System.out.println("Added room " + roomNo + " for type " + roomType);
+        // Step 3: Get available room numbers for the given date range
+        List<Integer> roomNumbersInRange = roomRepo.findAvailableRoomsByDateRange(checkIn, checkOut);
+
+        if (roomNumbersInRange.isEmpty()) {
+            throw new RoomNotAvailableException("No available rooms in the selected date range.");
+        }
+
+        // Step 4: Choose the smallest room number per new room type
+        Map<Integer, Integer> oneRoomPerNewType = new HashMap<>();
+
+        for (Integer roomNumber : roomNumbersInRange) {
+            int roomTypeId = roomNumber / 100;
+
+            // Only consider if this type isn't already included
+            if (!coveredRoomTypeIds.contains(roomTypeId)) {
+                if (!oneRoomPerNewType.containsKey(roomTypeId) || roomNumber < oneRoomPerNewType.get(roomTypeId)) {
+                    oneRoomPerNewType.put(roomTypeId, roomNumber);
+                }
             }
-        });
+        }
+
+        // Step 5: Convert new room numbers to DTOs
+        List<Integer> newRoomNumbers = new ArrayList<>(oneRoomPerNewType.values());
+        List<RoomTypeWithSingleRoomDTO> newRoomDTOs = connectDTO.getRoomTypesWithOneRoom(newRoomNumbers);
+
+        // Step 6: Merge both lists
+        defaultRoomList.addAll(newRoomDTOs);
+
+        // Step 7: Sort by room type ID
+        defaultRoomList.sort((a, b) -> a.getId() - b.getId());
+
+        return defaultRoomList;
     }
-
-
-    }
-
+}

@@ -1,5 +1,6 @@
 package com.example.hotelManagementBackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class Service {
     private double price;
 
     @ManyToMany(mappedBy = "services")
+    @JsonIgnore
     private List<Guest> guests = new ArrayList<>();
     // Constructors, getters, and setters
     public Service() {}

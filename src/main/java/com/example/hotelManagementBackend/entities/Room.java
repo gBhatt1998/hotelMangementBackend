@@ -25,7 +25,7 @@ public class Room {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "roomTypeId", nullable = false)
     @JsonManagedReference
-    @JsonIgnore
+//    @JsonIgnore
     private RoomType roomType;
 
     public int getRoomNo() {

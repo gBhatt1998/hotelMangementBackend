@@ -1,5 +1,6 @@
 package com.example.hotelManagementBackend.repositories;
 
+import com.example.hotelManagementBackend.entities.Reservation;
 import com.example.hotelManagementBackend.entities.Room;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,6 +39,11 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
 //    @Modifying
 //    @Query("UPDATE  Room r SET r.availability=false WHERE r.roomNO= :roomNum ")
 //    void confirmRoom(@Param("roomNum") Integer roomNum);
+//
+
+
+    @Query("SELECT MIN(r.roomNo) FROM Room r WHERE r.availability=true GROUP BY r.roomType ")
+    List<Integer> findOneRoomNoPerRoomType();
 
 
 

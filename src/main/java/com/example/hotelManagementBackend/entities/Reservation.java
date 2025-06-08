@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Date;
+import java.sql.Date;
 @Data
 @Entity
 public class Reservation {
@@ -54,7 +54,7 @@ public class Reservation {
         this.totalPrice = totalPrice;
     }
 
-    public Date getCheckOutDate() {
+    public java.sql.Date getCheckOutDate() {
         return checkOutDate;
     }
 
@@ -62,7 +62,7 @@ public class Reservation {
         this.checkOutDate = checkOutDate;
     }
 
-    public Date getCheckInDate() {
+    public java.sql.Date getCheckInDate() {
         return checkInDate;
     }
 

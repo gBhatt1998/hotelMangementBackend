@@ -47,17 +47,17 @@ public class Guest {
         }
     }
 
-//    public void removeService(Service service) {
-//        services.remove(service);
-//        service.getGuests().remove(this);
-//    }
+    public void removeService(Service service) {
+        services.remove(service);
+        service.getGuests().remove(this);
+    }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(int id) {
-        id = id;
+        this.id = id;
     }
 
     public String getName() {

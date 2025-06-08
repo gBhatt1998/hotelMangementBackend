@@ -1,5 +1,7 @@
 package com.example.hotelManagementBackend.services;
 
+import com.example.hotelManagementBackend.Exception.InvalidDateRangeException;
+import com.example.hotelManagementBackend.Exception.RoomNotFoundException;
 import com.example.hotelManagementBackend.dto.ReservationRequest;
 import com.example.hotelManagementBackend.entities.Guest;
 import com.example.hotelManagementBackend.entities.Reservation;
@@ -10,6 +12,7 @@ import com.example.hotelManagementBackend.repositories.RoomRepository;
 import com.example.hotelManagementBackend.repositories.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 //import org.springframework.stereotype.Service;
 import com.example.hotelManagementBackend.entities.Service;
@@ -27,9 +30,16 @@ public class ConfirmReservationService {
     private RoomRepository roomRepo;
     @Autowired
     private  ServiceRepository serviceRepo;
-//    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public Reservation createReservation(ReservationRequest request) {
+
+        if (request.getCheckInDate().after(request.getCheckOutDate())) {
+            throw new InvalidDateRangeException("Check-out date must be after check-in date");
+        }
+        //Populate the guest details
         Guest guest = processGuest(request.getGuestDetails());
 
         //get services
@@ -43,7 +53,9 @@ public class ConfirmReservationService {
         });
         // Get room and update availability
         Room room = roomRepo.findById(request.getRoomId())
-                .orElseThrow(() -> new EntityNotFoundException("Room not found"));
+                .orElseThrow(() -> new RoomNotFoundException(
+                        "Room not found with ID: " + request.getRoomId()
+                ));
 
         // Update room status
         room.setAvailability(false);
@@ -62,15 +74,16 @@ public class ConfirmReservationService {
     }
 
 
-private Guest processGuest(ReservationRequest.GuestDetails details) {
-
-    Guest newGuest = new Guest();
-    newGuest.setName(details.getName());
-    newGuest.setEmail(details.getEmail());
-    newGuest.setPassword(details.getPassword());
-    newGuest.setPhone(details.getPhone());
-    newGuest.setRole(details.getRole());
-    return guestRepo.save(newGuest);
-}
-
+    private Guest processGuest(ReservationRequest.GuestDetails details) {
+        return guestRepo.findByEmail(details.getEmail())
+                .orElseGet(() -> {
+                    Guest newGuest = new Guest();
+                    newGuest.setName(details.getName());
+                    newGuest.setEmail(details.getEmail());
+                    newGuest.setPassword(passwordEncoder.encode(details.getPassword()));
+                    newGuest.setPhone(details.getPhone());
+                    newGuest.setRole("ROLE_"+details.getRole().toUpperCase());
+                    return guestRepo.save(newGuest);
+                });
+    }
 }
