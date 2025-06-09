@@ -41,6 +41,8 @@ public class AdminService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Reservation not found with ID: " + reservationId));
 
 
+        //get guest id to soft delete / cancel the rservartion
+        String role=reservation.getGuest().getRole();
 
         Guest guest =reservation.getGuest();
         int guestId= guest.getId();
@@ -57,8 +59,9 @@ public class AdminService {
 
         if (count == 0) {
             //remove guest if the service and guest
+
             guestRepo.deleteGuestServicesByGuestId(guestId);
-            guestRepo.delete(guest); // Also delete guest if no other reservation
+            if(role!="ADMIN")guestRepo.delete(guest); // Also delete guest if no other reservation
         }
 
 //        List<Service> Remove = serviceRepo.findServicesByReservationId(reservationId);

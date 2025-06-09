@@ -2,12 +2,23 @@ package com.example.hotelManagementBackend.dto;
 
 public class AuthResponse {
 
-    private String jwt;
+    private String token;
 
-    public AuthResponse(String jwt) {
-        this.jwt = jwt;
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    private String role;
+
+    public AuthResponse(String token, String role) {
+        this.token = token;
+        this.role=role;
     }
 
     // getter
-    public String getJwt() { return jwt; }
+    public String getJwt() { return token; }
 }

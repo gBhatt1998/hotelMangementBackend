@@ -105,6 +105,7 @@ public class ReservationController {
     public ResponseEntity<?> createReservation(@Valid
                                                @RequestBody ReservationRequest request) {
 
+
         Reservation reservation = confirmReservationService.createReservation(request);
 //        populateEveryRoomType.resetRoomMap();
         return ResponseEntity.ok(Map.of("message", "Reservation Confirm for Room Number" + request.getRoomId()));

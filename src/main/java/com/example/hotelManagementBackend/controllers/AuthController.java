@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/auth")
 public class AuthController {
 
 
@@ -49,7 +49,8 @@ public class AuthController {
         Guest guest = guestRepository.findByEmail(authRequest.getEmail())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Email not found."));
 
-        final String jwt = jwtUtil.generateToken(new GuestDetails(guest));
-        return ResponseEntity.ok(new AuthResponse(jwt));
+        final String token = jwtUtil.generateToken(new GuestDetails(guest));
+        final String role= guest.getRole();
+        return ResponseEntity.ok(new AuthResponse(token,role));
     }
 }
