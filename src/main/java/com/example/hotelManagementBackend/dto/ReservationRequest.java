@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ReservationRequest {
     @NotNull(message = "Check-in date is required")
-    @FutureOrPresent(message = "Check-in date must be today or in the future")
+//    @FutureOrPresent(message = "Check-in date must be today or in the future")
     private Date checkInDate;
 
     @NotNull(message = "Check-out date is required")
@@ -26,6 +26,7 @@ public class ReservationRequest {
     @Valid
     @NotNull(message = "Guest details are required")
     private GuestDetails guestDetails;
+
     private List<@Positive(message = "Service ID must be a positive number")Integer> serviceIds; // IDs of selected services
 
 

@@ -11,14 +11,18 @@ import com.example.hotelManagementBackend.repositories.ReservationRepository;
 import com.example.hotelManagementBackend.repositories.RoomRepository;
 import com.example.hotelManagementBackend.repositories.ServiceRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 //import org.springframework.stereotype.Service;
 import com.example.hotelManagementBackend.entities.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Transactional
 @Component
 public class ConfirmReservationService {
 
@@ -43,14 +47,17 @@ public class ConfirmReservationService {
         Guest guest = processGuest(request.getGuestDetails());
 
         //get services
-        List<Service> selectedServices = serviceRepo.findAllById(request.getServiceIds());
-        //add guest to service
-        selectedServices.forEach(service -> {
-            if (!guest.getServices().contains(service)) {
-                guest.getServices().add(service);
-                service.getGuests().add(guest);
-            }
-        });
+        List<Service> selectedServices = new ArrayList<>();
+        if (request.getServiceIds() != null && !request.getServiceIds().isEmpty()) {
+            selectedServices = serviceRepo.findAllById(request.getServiceIds());
+            // Add guest to services
+            selectedServices.forEach(service -> {
+                if (!guest.getServices().contains(service)) {
+                    guest.getServices().add(service);
+                    service.getGuests().add(guest);
+                }
+            });
+        }
         // Get room and update availability
         Room room = roomRepo.findById(request.getRoomId())
                 .orElseThrow(() -> new RoomNotFoundException(

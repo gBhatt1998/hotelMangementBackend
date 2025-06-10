@@ -7,8 +7,10 @@ import com.example.hotelManagementBackend.dto.RoomTypeWithSingleRoomDTO;
 import com.example.hotelManagementBackend.entities.Reservation;
 import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.entities.RoomType;
+import com.example.hotelManagementBackend.entities.Service;
 import com.example.hotelManagementBackend.repositories.ReservationRepository;
 import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
+import com.example.hotelManagementBackend.services.AvailableServices;
 import com.example.hotelManagementBackend.services.ConfirmReservationService;
 import com.example.hotelManagementBackend.services.PopulateEveryRoomType;
 import com.example.hotelManagementBackend.services.ReservationServices;
@@ -43,6 +45,9 @@ public class ReservationController {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private AvailableServices availableServices;
 
     @GetMapping("/test")
     public String test() {
@@ -101,7 +106,7 @@ public class ReservationController {
         }
     }
 
-    @PostMapping("/confirmReservation")
+    @PostMapping("/confirmed")
     public ResponseEntity<?> createReservation(@Valid
                                                @RequestBody ReservationRequest request) {
 
@@ -116,4 +121,15 @@ public class ReservationController {
 //    public ResponseEntity<List<Reservation>> getAllreservation(){
 //        return ResponseEntity.ok(reservationRepository.findAllWithRoomAndGuest());
 //    }
+
+
+
+
+    @GetMapping("/allServices")
+    public ResponseEntity<List<Service>> allAvailableServices(){
+        return ResponseEntity.ok(availableServices.getAllService());
+    }
+
+
+
 }
