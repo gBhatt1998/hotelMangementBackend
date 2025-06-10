@@ -27,7 +27,8 @@ public class RoomType {
     @Column(name = "price_per_night")
     float pricePerNight;
 
-
+    @Column(name = "image_url")
+    private String imageUrl;
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL)
     @JsonBackReference
 //    @JsonIgnore
@@ -66,6 +67,15 @@ public class RoomType {
     public void setPricePerNight(float pricePerNight) {
         this.pricePerNight = pricePerNight;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 
     public List<Room> getRoomList() {
         return roomList;

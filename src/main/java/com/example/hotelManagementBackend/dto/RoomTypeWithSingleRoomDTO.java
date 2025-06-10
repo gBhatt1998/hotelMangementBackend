@@ -6,14 +6,23 @@ public class RoomTypeWithSingleRoomDTO {
     private String description;
     private Float pricePerNight;
     private Integer roomNumber;
+    private String imageUrl;
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
 
-    public RoomTypeWithSingleRoomDTO(Integer id, String type, String description, Float pricePerNight, Integer roomNumber) {
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public RoomTypeWithSingleRoomDTO(Integer id, String type, String description, Float pricePerNight, Integer roomNumber, String imageUrl) {
         this.id = id;
         this.type = type;
         this.description = description;
         this.pricePerNight = pricePerNight;
         this.roomNumber = roomNumber;
+        this.imageUrl=imageUrl;
     }
 
     // Getters and Setters

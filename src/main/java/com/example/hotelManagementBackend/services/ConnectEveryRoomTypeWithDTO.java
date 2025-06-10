@@ -32,7 +32,8 @@ public class ConnectEveryRoomTypeWithDTO {
                         (String) details.get("type"),
                         (String) details.get("description"),
                         (Float) details.get("pricePerNight"),
-                        roomNumber
+                        roomNumber,
+                        (String)details.get("imageUrl")
                 );
                 result.add(dto);
             }

@@ -35,6 +35,7 @@
                 roomTypeDetails.put("type", roomType.getType());
                 roomTypeDetails.put("description", roomType.getDescription());
                 roomTypeDetails.put("pricePerNight", roomType.getPricePerNight());
+                roomTypeDetails.put("imageUrl",roomType.getImageUrl());
 
                 roomTypeDataMap.put(roomType.getId(), roomTypeDetails);
             }
