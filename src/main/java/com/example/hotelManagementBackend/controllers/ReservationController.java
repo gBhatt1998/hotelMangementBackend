@@ -2,6 +2,7 @@ package com.example.hotelManagementBackend.controllers;
 
 
 import com.example.hotelManagementBackend.Exception.CustomException;
+import com.example.hotelManagementBackend.dto.ApiResponse;
 import com.example.hotelManagementBackend.dto.ReservationRequest;
 import com.example.hotelManagementBackend.dto.RoomTypeWithSingleRoomDTO;
 import com.example.hotelManagementBackend.entities.Reservation;
@@ -113,7 +114,9 @@ public class ReservationController {
 
         Reservation reservation = confirmReservationService.createReservation(request);
 //        populateEveryRoomType.resetRoomMap();
-        return ResponseEntity.ok(Map.of("message", "Reservation Confirm for Room Number" + request.getRoomId()));
+        String message = "Reservation confirmed for room " + reservation.getRoom().getRoomNo();
+
+        return ResponseEntity.ok(new ApiResponse<>("success", message, null));
     }
 
 
