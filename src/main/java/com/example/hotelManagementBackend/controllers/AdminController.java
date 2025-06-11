@@ -2,6 +2,7 @@ package com.example.hotelManagementBackend.controllers;
 
 import com.example.hotelManagementBackend.Auth.GuestDetails;
 import com.example.hotelManagementBackend.Exception.CustomException;
+import com.example.hotelManagementBackend.dto.ApiResponse;
 import com.example.hotelManagementBackend.dto.ReservationDetailsResponse;
 import com.example.hotelManagementBackend.services.AdminService;
 import com.example.hotelManagementBackend.services.ReservationDetailsResponseService;
@@ -28,13 +29,16 @@ public class AdminController {
     private ReservationDetailsResponseService reservationDetailsResponseService;
 
     @Operation(summary = "Delete a reservation by ID")
-    @DeleteMapping("/{reservationId}")
-    public ResponseEntity<String> deleteReservation(@PathVariable int reservationId) throws CustomException {
+    @DeleteMapping("/{reservationId}/delete")
+    public ResponseEntity<ApiResponse<String>> deleteReservation(@PathVariable int reservationId) throws CustomException {
         adminService.deleteReservationById(reservationId);
-        return ResponseEntity.ok("Reservation deleted successfully.");
+        return ResponseEntity.ok(
+                new ApiResponse<>("success", "Reservation deleted successfully.", null)
+        );
     }
 
-    @GetMapping("/allReservations")
+
+    @GetMapping("/allreservation")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ReservationDetailsResponse>> getGuestReservations(
             @AuthenticationPrincipal GuestDetails guestDetails) {
