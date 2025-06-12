@@ -5,16 +5,14 @@ import com.example.hotelManagementBackend.entities.Guest;
 import com.example.hotelManagementBackend.entities.Reservation;
 import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.entities.Service;
-import com.example.hotelManagementBackend.repositories.GuestRepository;
-import com.example.hotelManagementBackend.repositories.ReservationRepository;
-import com.example.hotelManagementBackend.repositories.RoomRepository;
-import com.example.hotelManagementBackend.repositories.ServiceRepository;
+import com.example.hotelManagementBackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 //import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class AdminService {
@@ -30,6 +28,9 @@ public class AdminService {
 
     @Autowired
     private GuestRepository guestRepos;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     @Autowired
     private RoomRepository roomRepository;
@@ -74,4 +75,13 @@ public class AdminService {
 //            guestRepo.deleteById(guestId);
 //        }
     }
+
+    public List<Map<String, Object>> getEmployeeCountPerDepartment() {
+        return departmentRepository.countEmployeesByDepartment();
+    }
+
+    public List<Map<String, Object>> getRoomOccupancyByRoomType() {
+        return roomRepository.getRoomOccupancyByRoomType();
+    }
+
 }

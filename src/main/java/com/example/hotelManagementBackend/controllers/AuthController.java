@@ -43,14 +43,16 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
             );
         } catch (BadCredentialsException e) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED, "Invalid email or password.");
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "Invalid credentials.");
         }
 
         Guest guest = guestRepository.findByEmail(authRequest.getEmail())
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Email not found."));
+                .orElseThrow(() -> new CustomException(HttpStatus.UNAUTHORIZED, "Invalid credentials."));
 
         final String token = jwtUtil.generateToken(new GuestDetails(guest));
-        final String role= guest.getRole();
-        return ResponseEntity.ok(new AuthResponse(token,role));
+        final String role = guest.getRole();
+
+        return ResponseEntity.ok(new AuthResponse(token, role));
     }
+
 }

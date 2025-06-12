@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface RoomRepository extends JpaRepository<Room,Integer> {
 
@@ -44,6 +45,11 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
 
     @Query("SELECT MIN(r.roomNo) FROM Room r WHERE r.availability=true GROUP BY r.roomType ")
     List<Integer> findOneRoomNoPerRoomType();
+
+    @Query("SELECT new map(rt.type as roomType, " +
+            "SUM(CASE WHEN r.availability = false THEN 1 ELSE 0 END) as occupied, COUNT(r) as total) " +
+            "FROM Room r JOIN r.roomType rt GROUP BY rt.type")
+    List<Map<String, Object>> getRoomOccupancyByRoomType();
 
 
 

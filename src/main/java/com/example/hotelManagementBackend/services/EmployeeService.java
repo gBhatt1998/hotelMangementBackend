@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Service
 public class EmployeeService {
 
@@ -23,7 +22,7 @@ public class EmployeeService {
     @Autowired
     private DepartmentRepository departmentRepository;
 
-    public String createEmployee(EmployeeRequestDTO request) {
+    public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
         List<Department> departments = departmentRepository.findAllById(request.getDepartmentIds());
         if (departments.isEmpty()) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Invalid Department IDs");
@@ -35,29 +34,18 @@ public class EmployeeService {
         employee.setHireDate(request.getHireDate());
         employee.setDepartments(departments);
 
-        employeeRepository.save(employee);
-        return "Employee created successfully";
+        employee = employeeRepository.save(employee);
+        return convertToResponseDTO(employee);
     }
 
     public List<EmployeeResponseDTO> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
-        List<EmployeeResponseDTO> responseList = new ArrayList<>();
-
-        for (Employee e : employees) {
-            EmployeeResponseDTO dto = new EmployeeResponseDTO();
-            dto.setId(e.getEmployeeId());
-            dto.setName(e.getName());
-            dto.setPosition(e.getPosition());
-            dto.setHireDate(e.getHireDate());
-            List<String> deptNames = e.getDepartments().stream().map(Department::getName).toList();
-            dto.setDepartments(deptNames);
-            responseList.add(dto);
-        }
-
-        return responseList;
+        return employees.stream()
+                .map(this::convertToResponseDTO)
+                .toList();
     }
 
-    public String updateEmployee(int id, EmployeeRequestDTO request) {
+    public EmployeeResponseDTO updateEmployee(int id, EmployeeRequestDTO request) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Employee not found"));
 
@@ -71,15 +59,28 @@ public class EmployeeService {
         employee.setHireDate(request.getHireDate());
         employee.setDepartments(departments);
 
-        employeeRepository.save(employee);
-        return "Employee updated";
+        employee = employeeRepository.save(employee);
+        return convertToResponseDTO(employee);
     }
 
-    public String deleteEmployee(int id) {
+    public void deleteEmployee(int id) {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Employee not found"));
 
         employeeRepository.delete(employee);
-        return "Employee deleted";
+    }
+
+    private EmployeeResponseDTO convertToResponseDTO(Employee employee) {
+        EmployeeResponseDTO dto = new EmployeeResponseDTO();
+        dto.setId(employee.getEmployeeId());
+        dto.setName(employee.getName());
+        dto.setPosition(employee.getPosition());
+        dto.setHireDate(employee.getHireDate());
+        dto.setDepartments(
+                employee.getDepartments().stream()
+                        .map(Department::getName)
+                        .toList()
+        );
+        return dto;
     }
 }

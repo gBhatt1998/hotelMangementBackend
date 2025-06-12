@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
@@ -48,5 +49,17 @@ public class AdminController {
         // Your CustomGuestDetails should expose guest ID
         List<ReservationDetailsResponse> reservations = reservationDetailsResponseService.getAllReservationDetails();
         return ResponseEntity.ok(reservations);
+    }
+
+    @GetMapping("/analytics/department-employee-count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Map<String, Object>>> getEmployeeCountByDepartment() {
+        return ResponseEntity.ok(adminService.getEmployeeCountPerDepartment());
+    }
+
+    @GetMapping("/analytics/room-occupancy")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Map<String, Object>>> getRoomOccupancyByType() {
+        return ResponseEntity.ok(adminService.getRoomOccupancyByRoomType());
     }
 }

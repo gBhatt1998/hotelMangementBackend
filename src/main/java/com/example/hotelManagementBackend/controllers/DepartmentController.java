@@ -20,9 +20,9 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @PostMapping
-    public ResponseEntity<String> createDepartment( @Valid @RequestBody DepartmentRequestDTO request) {
-        String result = departmentService.createDepartment(request);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<DepartmentResponseDTO> createDepartment(@Valid @RequestBody DepartmentRequestDTO request) {
+        DepartmentResponseDTO created = departmentService.createDepartment(request);
+        return ResponseEntity.ok(created); // Return full DTO, not String
     }
 
     @GetMapping
@@ -32,20 +32,20 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateDepartment(@PathVariable int id, @Valid @RequestBody DepartmentRequestDTO request) {
-        String result = departmentService.updateDepartment(id, request);
-        if (result.equals("Department not found")) {
-            return ResponseEntity.badRequest().body(result);
+    public ResponseEntity<DepartmentResponseDTO> updateDepartment(@PathVariable int id, @Valid @RequestBody DepartmentRequestDTO request) {
+        DepartmentResponseDTO updated = departmentService.updateDepartment(id, request);
+        if (updated == null) {
+            return ResponseEntity.notFound().build(); // 404 if not found
         }
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteDepartment(@PathVariable int id) {
-        String result = departmentService.deleteDepartment(id);
-        if (result.equals("Department not found")) {
-            return ResponseEntity.badRequest().body(result);
+    public ResponseEntity<Void> deleteDepartment(@PathVariable int id) {
+        boolean deleted = departmentService.deleteDepartment(id);
+        if (!deleted) {
+            return ResponseEntity.notFound().build(); // 404 if not found
         }
-        return ResponseEntity.ok(result);
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }

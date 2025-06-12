@@ -6,8 +6,10 @@ import com.example.hotelManagementBackend.dto.ReservationDetailsResponse;
 import com.example.hotelManagementBackend.dto.ReservationSummaryDTO;
 import com.example.hotelManagementBackend.entities.Guest;
 import com.example.hotelManagementBackend.entities.Reservation;
+import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.repositories.GuestRepository;
 import com.example.hotelManagementBackend.repositories.ReservationRepository;
+import com.example.hotelManagementBackend.repositories.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class GuestService {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private RoomRepository roomRepository;
 
     public GuestReservationsResponse getReservationsByGuest(String email) {
         // Get the guest by email
@@ -72,5 +77,28 @@ public class GuestService {
 
         return response;
     }
+
+    public void deleteReservationByGuest(int reservationId, String email) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Reservation not found"));
+
+        if (!reservation.getGuest().getEmail().equals(email)) {
+            throw new CustomException(HttpStatus.FORBIDDEN, "You can only delete your own reservations");
+        }
+
+        Room room = reservation.getRoom();
+        if (room != null) {
+            room.setAvailability(true);
+            roomRepository.save(room);
+        }
+
+        reservationRepository.delete(reservation);
+
+        long count = reservationRepository.countByGuestId(reservation.getGuest().getId());
+        if (count == 0) {
+            guestRepository.deleteGuestServicesByGuestId(reservation.getGuest().getId());
+        }
+    }
+
 
 }

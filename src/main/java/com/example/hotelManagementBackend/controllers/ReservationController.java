@@ -86,14 +86,14 @@ public class ReservationController {
         return rs.getAllReservations();
     }
 
-    @GetMapping("/allAvailableRooms")
+    @GetMapping("/rooms/available/types")
     public List<RoomTypeWithSingleRoomDTO> getRoomTypesWithSingleRoom() {
         // Reset the map
 //        populateEveryRoomType.resetRoomMap();
         return rs.getAvailableRoom();
     }
 
-    @GetMapping("/availableRoomsByDate")
+    @GetMapping("/rooms/available/by-date")
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoomsByDate(
             @RequestParam("checkIn") String checkInStr,
             @RequestParam("checkOut") String checkOutStr) {
@@ -128,7 +128,7 @@ public class ReservationController {
 
 
 
-    @GetMapping("/allServices")
+    @GetMapping("/services")
     public ResponseEntity<List<Service>> allAvailableServices(){
         return ResponseEntity.ok(availableServices.getAllService());
     }

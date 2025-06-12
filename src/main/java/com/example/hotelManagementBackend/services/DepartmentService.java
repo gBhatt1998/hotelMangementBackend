@@ -19,44 +19,51 @@ public class DepartmentService {
     @Autowired
     private DepartmentRepository departmentRepository;
 
-    public String createDepartment(DepartmentRequestDTO request) {
-        Optional<Department> existing = departmentRepository.findByName(request.getName());
+
+    public DepartmentResponseDTO createDepartment(DepartmentRequestDTO request) {
+        Optional<Department> existing = departmentRepository.findByNameIgnoreCase(request.getName());
         if (existing.isPresent()) {
-            throw new CustomException(HttpStatus.CONFLICT,"Department Already Exist");
+            throw new CustomException(HttpStatus.CONFLICT, "Department Already Exists");
         }
         Department department = new Department();
         department.setName(request.getName());
-        departmentRepository.save(department);
-        return "Department created";
+        Department saved = departmentRepository.save(department);
+
+        return mapToResponseDTO(saved);
     }
 
     public List<DepartmentResponseDTO> getAllDepartments() {
-
         List<Department> departments = departmentRepository.findAll();
         List<DepartmentResponseDTO> responseList = new ArrayList<>();
 
         for (Department d : departments) {
-            DepartmentResponseDTO dto = new DepartmentResponseDTO();
-            dto.setId(d.getDepartmentId());
-            dto.setName(d.getName());
-            responseList.add(dto);
+            responseList.add(mapToResponseDTO(d));
         }
         return responseList;
     }
 
-    public String updateDepartment(int id, DepartmentRequestDTO request) {
+
+    public DepartmentResponseDTO updateDepartment(int id, DepartmentRequestDTO request) {
         Department department = departmentRepository.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "No such Department"));
 
         department.setName(request.getName());
-        departmentRepository.save(department);
-        return "Department updated";
+        Department updated = departmentRepository.save(department);
+
+        return mapToResponseDTO(updated);
     }
 
-    public String deleteDepartment(int id) {
+    public boolean deleteDepartment(int id) {
         Department department = departmentRepository.findById(id)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "No such Department"));
         departmentRepository.delete(department);
-        return "Department deleted";
+        return true;
+    }
+
+    private DepartmentResponseDTO mapToResponseDTO(Department department) {
+        DepartmentResponseDTO dto = new DepartmentResponseDTO();
+        dto.setId(department.getDepartmentId());
+        dto.setName(department.getName());
+        return dto;
     }
 }
