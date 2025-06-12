@@ -82,7 +82,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/webjars/**"
                         ).permitAll()
-                        .requestMatchers( "api/auth/login", "/reservation/**").permitAll()
+                        .requestMatchers( "/api/auth/login", "/reservation/**","/room-types/**","/error" ).permitAll()
                         .requestMatchers("/guest/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

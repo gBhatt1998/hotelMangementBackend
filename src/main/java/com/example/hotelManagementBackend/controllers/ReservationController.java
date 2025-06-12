@@ -76,36 +76,26 @@ public class ReservationController {
 
 //      System.out.print("controller working");
 
-    @GetMapping("/isAvailable")
-    public List<Room> isAvailable() {
-        return rs.findByAvailabilityWithDetails();
-    }
 
-    @GetMapping("/allReservation")
-    public List<Reservation> getAllReservations() {
-        return rs.getAllReservations();
-    }
-
-    @GetMapping("/rooms/available/types")
-    public List<RoomTypeWithSingleRoomDTO> getRoomTypesWithSingleRoom() {
-        // Reset the map
-//        populateEveryRoomType.resetRoomMap();
-        return rs.getAvailableRoom();
-    }
-
-    @GetMapping("/rooms/available/by-date")
-    public List<RoomTypeWithSingleRoomDTO> getAvailableRoomsByDate(
-            @RequestParam("checkIn") String checkInStr,
-            @RequestParam("checkOut") String checkOutStr) {
-        try {
-            Date checkIn = Date.valueOf(checkInStr); // "yyyy-MM-dd"
-            Date checkOut = Date.valueOf(checkOutStr);
-//            populateEveryRoomType.resetRoomMap();
-            return rs.getAvailableRoomOutsideDateRange(checkIn, checkOut);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date format. Use yyyy-MM-dd.");
-        }
-    }
+//    @GetMapping("/room-types/available")
+//    public ResponseEntity<ApiResponse<List<RoomTypeWithSingleRoomDTO>>> getAvailableRoomTypesWithOneRoomEach() {
+//        List<RoomTypeWithSingleRoomDTO> data = rs.getAvailableRoom();
+//        return ResponseEntity.ok(new ApiResponse<>("success", "Available room types with one room each", data));
+//    }
+//
+//    @GetMapping("/rooms/available/by-date")
+//    public List<RoomTypeWithSingleRoomDTO> getAvailableRoomsByDate(
+//            @RequestParam("checkIn") String checkInStr,
+//            @RequestParam("checkOut") String checkOutStr) {
+//        try {
+//            Date checkIn = Date.valueOf(checkInStr); // "yyyy-MM-dd"
+//            Date checkOut = Date.valueOf(checkOutStr);
+////            populateEveryRoomType.resetRoomMap();
+//            return rs.getAvailableRoomOutsideDateRange(checkIn, checkOut);
+//        } catch (IllegalArgumentException e) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date format. Use yyyy-MM-dd.");
+//        }
+//    }
 
     @PostMapping("/confirmed")
     public ResponseEntity<?> createReservation(@Valid

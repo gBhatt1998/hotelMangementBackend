@@ -33,7 +33,6 @@ public class GuestController {
         System.out.println("Authenticated user: " + guestDetails.getUsername());
         System.out.println("Authorities: " + guestDetails.getAuthorities());
 
-        // Your CustomGuestDetails should expose guest ID
         GuestReservationsResponse reservations = guestService.getReservationsByGuest(email);
         return ResponseEntity.ok(reservations);
     }
