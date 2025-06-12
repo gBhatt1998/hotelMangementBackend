@@ -2,6 +2,7 @@ package com.example.hotelManagementBackend.services;
 
 import com.example.hotelManagementBackend.Exception.InvalidDateRangeException;
 import com.example.hotelManagementBackend.Exception.RoomNotFoundException;
+import com.example.hotelManagementBackend.Exception.WrongPasswordException;
 import com.example.hotelManagementBackend.dto.ReservationRequest;
 import com.example.hotelManagementBackend.entities.Guest;
 import com.example.hotelManagementBackend.entities.Reservation;
@@ -83,14 +84,21 @@ public class ConfirmReservationService {
 
     private Guest processGuest(ReservationRequest.GuestDetails details) {
         return guestRepo.findByEmail(details.getEmail())
+                .map(existingGuest -> {
+                    if (!passwordEncoder.matches(details.getPassword(), existingGuest.getPassword())) {
+                        throw new WrongPasswordException("Incorrect password for existing user");
+                    }
+                    return existingGuest;
+                })
                 .orElseGet(() -> {
                     Guest newGuest = new Guest();
                     newGuest.setName(details.getName());
                     newGuest.setEmail(details.getEmail());
                     newGuest.setPassword(passwordEncoder.encode(details.getPassword()));
                     newGuest.setPhone(details.getPhone());
-                    newGuest.setRole("ROLE_"+details.getRole().toUpperCase());
+                    newGuest.setRole("ROLE_" + details.getRole().toUpperCase());
                     return guestRepo.save(newGuest);
                 });
     }
+
 }

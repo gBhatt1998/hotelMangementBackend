@@ -19,19 +19,18 @@ public class PopulateEveryRoomType {
         this.connectDTO = connectDTO;
     }
 
-    //  Get one available room per room type without date filter
+    // Get one available room per room type without date filter
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoom() {
         List<Integer> availableRoomNumbers = roomRepo.findOneRoomNoPerRoomType();
 
         if (availableRoomNumbers.isEmpty()) {
-            throw new RoomNotAvailableException("No available rooms found.");
+            throw new RoomNotAvailableException("No available rooms found at all.");
         }
 
-        // Convert room numbers to DTOs
         return connectDTO.getRoomTypesWithOneRoom(availableRoomNumbers);
     }
 
-    //Get one available room per room type considering date range
+    // Get one available room per room type considering date range
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoomOutsideDateRange(Date checkIn, Date checkOut) {
         // Step 1: Get available rooms without date filter
         List<RoomTypeWithSingleRoomDTO> defaultRoomList = getAvailableRoom();
@@ -46,16 +45,13 @@ public class PopulateEveryRoomType {
         List<Integer> roomNumbersInRange = roomRepo.findAvailableRoomsByDateRange(checkIn, checkOut);
 
         if (roomNumbersInRange.isEmpty()) {
-            throw new RoomNotAvailableException("No available rooms in the selected date range.");
+            return defaultRoomList; // ✅ No new rooms, return default list
         }
 
         // Step 4: Choose the smallest room number per new room type
         Map<Integer, Integer> oneRoomPerNewType = new HashMap<>();
-
         for (Integer roomNumber : roomNumbersInRange) {
             int roomTypeId = roomNumber / 100;
-
-            // Only consider if this type isn't already included
             if (!coveredRoomTypeIds.contains(roomTypeId)) {
                 if (!oneRoomPerNewType.containsKey(roomTypeId) || roomNumber < oneRoomPerNewType.get(roomTypeId)) {
                     oneRoomPerNewType.put(roomTypeId, roomNumber);
@@ -71,7 +67,7 @@ public class PopulateEveryRoomType {
         defaultRoomList.addAll(newRoomDTOs);
 
         // Step 7: Sort by room type ID
-        defaultRoomList.sort((a, b) -> a.getId() - b.getId());
+        defaultRoomList.sort(Comparator.comparingInt(RoomTypeWithSingleRoomDTO::getId));
 
         return defaultRoomList;
     }

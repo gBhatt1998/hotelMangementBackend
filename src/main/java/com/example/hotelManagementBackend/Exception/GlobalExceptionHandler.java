@@ -1,6 +1,5 @@
 package com.example.hotelManagementBackend.Exception;
 
-
 import com.example.hotelManagementBackend.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,30 +26,29 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, ex.getStatus());
     }
 
-    //validation error
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex){
-        Map<String, List<String>> validError=ex.getBindingResult()
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, List<String>> validError = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .collect(Collectors.groupingBy(
                         FieldError::getField,
-                        Collectors.mapping(FieldError::getDefaultMessage,Collectors.toList())
+                        Collectors.mapping(FieldError::getDefaultMessage, Collectors.toList())
                 ));
 
-        ErrorResponse errorResponse= new ErrorResponse(
-                "Validation Failed",HttpStatus.BAD_REQUEST.value(), new Date(), validError);
+        ErrorResponse errorResponse = new ErrorResponse(
+                "Validation Failed", HttpStatus.BAD_REQUEST.value(), new Date(), validError);
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-
     }
 
     @ExceptionHandler({
             RoomNotAvailableException.class,
             RoomNotFoundException.class,
-            InvalidDateRangeException.class
+            InvalidDateRangeException.class,
+            WrongPasswordException.class
     })
-    public ResponseEntity<ErrorResponse> DetermineException(RuntimeException ex) {
+    public ResponseEntity<ErrorResponse> determineException(RuntimeException ex) {
         HttpStatus status = determineHttpStatus(ex);
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
@@ -62,14 +60,14 @@ public class GlobalExceptionHandler {
 
     private HttpStatus determineHttpStatus(RuntimeException ex) {
         if (ex instanceof RoomNotAvailableException) {
-            return HttpStatus.CONFLICT;  // 409
+            return HttpStatus.CONFLICT;
         } else if (ex instanceof RoomNotFoundException) {
-            return HttpStatus.NOT_FOUND;  // 404
+            return HttpStatus.NOT_FOUND;
         } else if (ex instanceof InvalidDateRangeException) {
-            return HttpStatus.BAD_REQUEST;  // 400
+            return HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof WrongPasswordException) {
+            return HttpStatus.UNAUTHORIZED;
         }
-        return HttpStatus.INTERNAL_SERVER_ERROR;  // Default to 500
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
-
-
 }
