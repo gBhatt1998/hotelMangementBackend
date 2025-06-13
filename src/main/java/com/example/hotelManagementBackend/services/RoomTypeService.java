@@ -1,6 +1,9 @@
 package com.example.hotelManagementBackend.services;
 
+import com.example.hotelManagementBackend.dto.RoomTypeRequestDTO;
+import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.entities.RoomType;
+import com.example.hotelManagementBackend.mapper.RoomTypeMapper;
 import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,31 +17,42 @@ public class RoomTypeService {
     @Autowired
     private RoomTypeRepository roomTypeRepository;
 
+    @Autowired
+    private AnalyzeReservation analyzeReservation;
+
     public List<RoomType> getAllRoomTypes() {
         return roomTypeRepository.findAll();
     }
 
     public RoomType createRoomType(RoomType roomType) {
-        return roomTypeRepository.save(roomType);
+        RoomType created = roomTypeRepository.save(roomType);
+        analyzeReservation.refreshRoomTypeData(); // 🔄 refresh
+        return created;
     }
 
-    public RoomType updateRoomType(int id, RoomType updatedRoomType) {
-        Optional<RoomType> optionalRoomType = roomTypeRepository.findById(id);
-        if (optionalRoomType.isEmpty()) {
-            throw new RuntimeException("Room type not found with id " + id);
-        }
-        RoomType existing = optionalRoomType.get();
-        existing.setType(updatedRoomType.getType());
-        existing.setDescription(updatedRoomType.getDescription());
-        existing.setPricePerNight(updatedRoomType.getPricePerNight());
-        existing.setImageUrl(updatedRoomType.getImageUrl());
-        return roomTypeRepository.save(existing);
+    public RoomType updateRoomType(int id, RoomTypeRequestDTO dto) {
+        RoomType existing = roomTypeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Room type not found with id " + id));
+        RoomTypeMapper.updateEntity(existing, dto);
+        RoomType updated = roomTypeRepository.save(existing);
+        analyzeReservation.refreshRoomTypeData(); // 🔄 refresh
+        return updated;
     }
 
     public void deleteRoomType(int id) {
-        if (!roomTypeRepository.existsById(id)) {
-            throw new RuntimeException("Room type not found with id " + id);
+        RoomType roomType = roomTypeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Room type not found with id " + id));
+
+        List<Room> associatedRooms = roomType.getRoomList();
+
+        for (Room room : associatedRooms) {
+            if (room.getReservations() != null && !room.getReservations().isEmpty()) {
+                throw new RuntimeException("Cannot delete RoomType with ID " + id +
+                        " because room " + room.getRoomNo() + " has existing reservations.");
+            }
         }
-        roomTypeRepository.deleteById(id);
+
+        roomTypeRepository.delete(roomType);
+        analyzeReservation.refreshRoomTypeData(); // 🔄 refresh
     }
 }
