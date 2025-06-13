@@ -1,6 +1,9 @@
 package com.example.hotelManagementBackend.controllers;
 
+import com.example.hotelManagementBackend.dto.RoomRequestDTO;
+import com.example.hotelManagementBackend.dto.RoomResponseDTO;
 import com.example.hotelManagementBackend.entities.Room;
+import com.example.hotelManagementBackend.mapper.RoomMapper;
 import com.example.hotelManagementBackend.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,27 +15,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/rooms")
 public class RoomController {
-    @Autowired
-    private RoomService roomService;
+    @Autowired private RoomService service;
 
     @GetMapping
-    public ResponseEntity<List<Room>> getAll() {
-        return ResponseEntity.ok(roomService.getAllRooms());
+    public ResponseEntity<List<RoomResponseDTO>> getAllRooms() {
+        return ResponseEntity.ok(service.getAllRoomsWithDeleteFlag());
     }
 
     @PostMapping
-    public ResponseEntity<Room> create(@RequestBody Room room) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(roomService.createRoom(room));
-    }
-
-    @PutMapping("/{roomNo}")
-    public ResponseEntity<Room> update(@PathVariable int roomNo, @RequestBody Room room) {
-        return ResponseEntity.ok(roomService.updateRoom(roomNo, room));
+    public ResponseEntity<RoomResponseDTO> create(@RequestBody RoomRequestDTO dto) {
+        return new ResponseEntity<>(RoomMapper.toResponseDTO(service.createRoom(dto), true), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{roomNo}")
     public ResponseEntity<Void> delete(@PathVariable int roomNo) {
-        roomService.deleteRoom(roomNo);
+        service.deleteRoom(roomNo);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/suggest-next/{roomTypeId}")
+    public ResponseEntity<Integer> suggestNextRoomNumber(@PathVariable int roomTypeId) {
+        return ResponseEntity.ok(service.suggestNextRoomNumber(roomTypeId));
+    }
+
 }

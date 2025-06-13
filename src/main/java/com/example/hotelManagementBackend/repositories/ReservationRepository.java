@@ -53,4 +53,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
             "WHERE g.id = :guestId")
     List<Reservation> findByGuestIdWithDetails(@Param("guestId") int guestId);
 
+
+    boolean existsByRoom(Room room); // <-- This is required for room deletion logic
+
 }

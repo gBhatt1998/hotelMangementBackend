@@ -1,51 +1,76 @@
 package com.example.hotelManagementBackend.services;
 
+import com.example.hotelManagementBackend.dto.RoomResponseDTO;
 import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.entities.RoomType;
-import com.example.hotelManagementBackend.repositories.RoomRepository;
-import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
+import com.example.hotelManagementBackend.mapper.RoomMapper;
+import com.example.hotelManagementBackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import com.example.hotelManagementBackend.dto.RoomRequestDTO;
+import com.example.hotelManagementBackend.entities.Room;
+import com.example.hotelManagementBackend.entities.RoomType;
+import com.example.hotelManagementBackend.repositories.RoomRepository;
+import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class RoomService {
+    private final RoomRepository roomRepo;
+    private final RoomTypeRepository roomTypeRepo;
+    private final ReservationRepository reservationRepo;
 
-    @Autowired
-    private RoomRepository roomRepository;
-
-    @Autowired
-    private RoomTypeRepository roomTypeRepository;
+    public RoomService(RoomRepository roomRepo, RoomTypeRepository roomTypeRepo, ReservationRepository reservationRepo) {
+        this.roomRepo = roomRepo;
+        this.roomTypeRepo = roomTypeRepo;
+        this.reservationRepo = reservationRepo;
+    }
 
     public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+        return roomRepo.findAll();
     }
 
-    public Room createRoom(Room room) {
-        RoomType roomType = roomTypeRepository.findById(room.getRoomTypeId().getId())
-                .orElseThrow(() -> new RuntimeException("Room type not found with id " + room.getRoomTypeId().getId()));
-        room.setRoomTypeId(roomType);
-        return roomRepository.save(room);
+    public List<RoomResponseDTO> getAllRoomsWithDeleteFlag() {
+        return roomRepo.findAll().stream()
+                .map(room -> RoomMapper.toResponseDTO(room, !reservationRepo.existsByRoom(room)))
+                .collect(Collectors.toList());
     }
 
-    public Room updateRoom(int roomNo, Room updatedRoom) {
-        Room existing = roomRepository.findById(roomNo)
-                .orElseThrow(() -> new RuntimeException("Room not found with number " + roomNo));
+    public Room createRoom(RoomRequestDTO dto) {
+        RoomType type = roomTypeRepo.findById(dto.getRoomTypeId())
+                .orElseThrow(() -> new RuntimeException("Room type not found"));
 
-        existing.setAvailability(updatedRoom.getAvailability());
+        int base = dto.getRoomTypeId() * 100;
+        int max = roomRepo.findMaxRoomNoForType(base, base + 99);
+        int newRoomNo = (max == 0) ? base + 1 : max + 1;
 
-        RoomType roomType = roomTypeRepository.findById(updatedRoom.getRoomTypeId().getId())
-                .orElseThrow(() -> new RuntimeException("Room type not found with id " + updatedRoom.getRoomTypeId().getId()));
-
-        existing.setRoomTypeId(roomType);
-        return roomRepository.save(existing);
+        Room room = new Room();
+        room.setRoomNo(newRoomNo);
+        room.setRoomTypeId(type);
+        room.setAvailability(dto.getAvailability());
+        return roomRepo.save(room);
     }
 
     public void deleteRoom(int roomNo) {
-        if (!roomRepository.existsById(roomNo)) {
-            throw new RuntimeException("Room not found with number " + roomNo);
+        Room room = roomRepo.findById(roomNo)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
+        if (reservationRepo.existsByRoom(room)) {
+            throw new RuntimeException("Cannot delete a room that has reservations.");
         }
-        roomRepository.deleteById(roomNo);
+        roomRepo.deleteById(roomNo);
     }
+
+    public int suggestNextRoomNumber(int roomTypeId) {
+        int base = roomTypeId * 100;
+        int max = roomRepo.findMaxRoomNoForType(base, base + 99);
+        return (max == 0) ? base + 1 : max + 1;
+    }
+
+
 }

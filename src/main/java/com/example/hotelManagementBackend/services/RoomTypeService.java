@@ -26,7 +26,7 @@ public class RoomTypeService {
 
     public RoomType createRoomType(RoomType roomType) {
         RoomType created = roomTypeRepository.save(roomType);
-        analyzeReservation.refreshRoomTypeData(); // 🔄 refresh
+        analyzeReservation.refreshRoomTypeData();
         return created;
     }
 
@@ -35,7 +35,7 @@ public class RoomTypeService {
                 .orElseThrow(() -> new RuntimeException("Room type not found with id " + id));
         RoomTypeMapper.updateEntity(existing, dto);
         RoomType updated = roomTypeRepository.save(existing);
-        analyzeReservation.refreshRoomTypeData(); // 🔄 refresh
+        analyzeReservation.refreshRoomTypeData();
         return updated;
     }
 
