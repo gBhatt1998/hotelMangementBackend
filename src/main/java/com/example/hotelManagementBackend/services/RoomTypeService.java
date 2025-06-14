@@ -53,6 +53,6 @@ public class RoomTypeService {
         }
 
         roomTypeRepository.delete(roomType);
-        analyzeReservation.refreshRoomTypeData(); // 🔄 refresh
+        analyzeReservation.refreshRoomTypeData();
     }
 }

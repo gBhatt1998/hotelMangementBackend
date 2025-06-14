@@ -41,14 +41,11 @@ public class RoomService {
                 .map(room -> RoomMapper.toResponseDTO(room, !reservationRepo.existsByRoom(room)))
                 .collect(Collectors.toList());
     }
-
     public Room createRoom(RoomRequestDTO dto) {
         RoomType type = roomTypeRepo.findById(dto.getRoomTypeId())
                 .orElseThrow(() -> new RuntimeException("Room type not found"));
 
-        int base = dto.getRoomTypeId() * 100;
-        int max = roomRepo.findMaxRoomNoForType(base, base + 99);
-        int newRoomNo = (max == 0) ? base + 1 : max + 1;
+        int newRoomNo = calculateNextRoomNumber(dto.getRoomTypeId());
 
         Room room = new Room();
         room.setRoomNo(newRoomNo);
@@ -67,10 +64,16 @@ public class RoomService {
     }
 
     public int suggestNextRoomNumber(int roomTypeId) {
-        int base = roomTypeId * 100;
-        int max = roomRepo.findMaxRoomNoForType(base, base + 99);
-        return (max == 0) ? base + 1 : max + 1;
+        if (!roomTypeRepo.existsById(roomTypeId)) {
+            throw new RuntimeException("Room type not found");
+        }
+        return calculateNextRoomNumber(roomTypeId);
     }
 
+    private int calculateNextRoomNumber(int roomTypeId) {
+        int base = roomTypeId * 100;
+        Integer max = roomRepo.findMaxRoomNoForType(base, base + 99);
+        return (max == null || max == 0) ? base + 1 : max + 1;
+    }
 
 }

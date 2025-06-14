@@ -56,6 +56,7 @@ public class ReservationDetailsResponseService {
         // Service names
         response.setServiceNames(reservation.getGuest().getServices().stream()
                 .map(Service::getName)
+                        .distinct()
                 .toList());
 
         // Guest details
