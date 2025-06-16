@@ -70,12 +70,17 @@ public class ReservationServices {
 
 
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoom() {
+        System.out.println(/*                     */);
+        System.out.print("query room list"+ roomTypeRepo.getAllRoomTypesWithMinimumRoomNo());
+
         return populateEveryRoomType.getAvailableRoom();
     }
 
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoomOutsideDateRange(Date checkIn, Date checkOut) {
         return populateEveryRoomType.getAvailableRoomOutsideDateRange(checkIn, checkOut);
     }
+
+
 
 
 

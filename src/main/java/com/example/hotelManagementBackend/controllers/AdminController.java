@@ -57,9 +57,5 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getEmployeeCountPerDepartment());
     }
 
-    @GetMapping("/analytics/room-occupancy")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Map<String, Object>>> getRoomOccupancyByType() {
-        return ResponseEntity.ok(adminService.getRoomOccupancyByRoomType());
-    }
+
 }

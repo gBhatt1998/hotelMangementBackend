@@ -25,9 +25,9 @@ public class AnalyzeReservation {
     @PostConstruct
     public void initializeRoomTypeMap() {
         this.roomTypeDataMap = buildRoomTypeDataMap();
-        System.out.println("RoomType data map initialized:");
+//        System.out.println("RoomType data map initialized:");
         System.out.println(roomTypeDataMap);
-        System.out.println("List of available room numbers:");
+//        System.out.println("List of available room numbers:");
         System.out.println(roomRepo.findAllAvailableRoom());
     }
 

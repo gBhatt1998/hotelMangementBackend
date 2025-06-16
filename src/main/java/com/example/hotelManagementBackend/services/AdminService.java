@@ -83,8 +83,6 @@ public class AdminService {
         return departmentRepository.countEmployeesByDepartment();
     }
 
-    public List<Map<String, Object>> getRoomOccupancyByRoomType() {
-        return roomRepository.getRoomOccupancyByRoomType();
-    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.example.hotelManagementBackend.repositories;
 
+import com.example.hotelManagementBackend.dto.RoomTypeWithSingleRoomDTO;
 import com.example.hotelManagementBackend.entities.Reservation;
 import com.example.hotelManagementBackend.entities.Room;
 import jakarta.transaction.Transactional;
@@ -16,12 +17,7 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
 
     List<Room> findAllByAvailability(Boolean availability);
 
-    @Query("SELECT r FROM Room r " +
-            "LEFT JOIN FETCH r.roomType " +
-            "LEFT JOIN FETCH r.reservations res " +
-            "LEFT JOIN FETCH res.guest " +
-            "WHERE r.availability = :availability")
-    List<Room> findByAvailabilityWithDetails(@Param("availability") boolean availability);
+
 
 
     @Query("SELECT r.roomNo FROM Room r "+
@@ -46,15 +42,13 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
     @Query("SELECT MIN(r.roomNo) FROM Room r WHERE r.availability=true GROUP BY r.roomType ")
     List<Integer> findOneRoomNoPerRoomType();
 
-    @Query("SELECT new map(rt.type as roomType, " +
-            "SUM(CASE WHEN r.availability = false THEN 1 ELSE 0 END) as occupied, COUNT(r) as total) " +
-            "FROM Room r JOIN r.roomType rt GROUP BY rt.type")
-    List<Map<String, Object>> getRoomOccupancyByRoomType();
 
 
 
     @Query("SELECT MAX(r.roomNo) FROM Room r WHERE r.roomNo BETWEEN :start AND :end")
     Integer  findMaxRoomNoForType(@Param("start") int start, @Param("end") int end);
+
+
 
 
 }

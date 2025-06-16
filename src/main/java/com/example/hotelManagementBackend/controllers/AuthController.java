@@ -50,9 +50,9 @@ public class AuthController {
                 .orElseThrow(() -> new CustomException(HttpStatus.UNAUTHORIZED, "Invalid credentials."));
 
         final String token = jwtUtil.generateToken(new GuestDetails(guest));
-        final String role = guest.getRole();
 
-        return ResponseEntity.ok(new AuthResponse(token, role));
+        return ResponseEntity.ok(new AuthResponse(token));
     }
+
 
 }

@@ -65,4 +65,17 @@ public class RoomTypeWithSingleRoomDTO {
     public void setRoomNumber(Integer roomNumber) {
         this.roomNumber = roomNumber;
     }
+
+    @Override
+    public String toString() {
+        return "RoomTypeWithSingleRoomDTO{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", pricePerNight=" + pricePerNight +
+                ", roomNumber=" + roomNumber +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
+    }
+
 }

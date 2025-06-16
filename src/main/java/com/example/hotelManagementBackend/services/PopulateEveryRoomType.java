@@ -46,7 +46,7 @@ public class PopulateEveryRoomType {
         List<Integer> roomNumbersInRange = roomRepo.findAvailableRoomsByDateRange(checkIn, checkOut);
 
         if (roomNumbersInRange.isEmpty()) {
-            return defaultRoomList; // ✅ No new rooms, return default list
+            return defaultRoomList; //
         }
 
         // Choose the smallest room number per new room type
