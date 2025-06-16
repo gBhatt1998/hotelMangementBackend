@@ -66,13 +66,7 @@ public class ReservationServices {
         }
     }
 
-    public List<Room> findByAvailabilityWithDetails(){
-        return roomRepo.findAllByAvailability(true);
-    }
 
-    public List<Reservation> getAllReservations() {
-        return reservationRepo.findAll();
-    }
 
 
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoom() {

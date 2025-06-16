@@ -62,7 +62,10 @@ public class AdminService {
             //remove guest if the service and guest
 
             guestRepo.deleteGuestServicesByGuestId(guestId);
-            if(role!="ADMIN")guestRepo.delete(guest); // Also delete guest if no other reservation
+            // Do not delete guest if they are admin
+            if (!"ADMIN".equalsIgnoreCase(role)) {
+                guestRepo.delete(guest);
+            } // Also delete guest if no other reservation
         }
 
 //        List<Service> Remove = serviceRepo.findServicesByReservationId(reservationId);

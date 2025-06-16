@@ -56,4 +56,25 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 
     boolean existsByRoom(Room room); // <-- This is required for room deletion logic
 
+    @Query(value = """
+    SELECT DATE_FORMAT(check_out_date, '%Y-%m') AS period,
+           SUM(total_price) AS totalRevenue
+    FROM reservation
+    GROUP BY period
+    ORDER BY period
+""", nativeQuery = true)
+    List<Object[]> getMonthlyRevenue();
+
+
+    @Query(value = """
+    SELECT YEARWEEK(check_out_date, 1) AS period,
+           SUM(total_price) AS totalRevenue
+    FROM reservation
+    GROUP BY period
+    ORDER BY period
+""", nativeQuery = true)
+    List<Object[]> getWeeklyRevenue();
+
+
+
 }

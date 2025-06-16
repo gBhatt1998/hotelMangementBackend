@@ -24,6 +24,9 @@ public class ReservationDetailsResponseService {
     // ReservationServices.java
     public List<ReservationDetailsResponse> getAllReservationDetails() {
         List<Reservation> reservations = reservationRepository.findAllWithDetails();
+        System.out.print("//------------------------//");
+        System.out.println("reservation" +reservations);
+        System.out.print("//------------------------//");
         return reservations.stream()
                 .map(this::mapToDetailsResponse)
                 .toList();

@@ -32,7 +32,7 @@ public class AnalyzeReservation {
     }
 
     public Map<Integer, Map<String, Object>> getRoomTypeDataMap() {
-        return new HashMap<>(roomTypeDataMap); // Return a copy for safety
+        return new HashMap<>(roomTypeDataMap);
     }
 
     public Map<String, Object> getRoomTypeDetailsById(int id) {

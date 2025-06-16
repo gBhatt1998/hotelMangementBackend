@@ -19,10 +19,11 @@ public class PopulateEveryRoomType {
         this.connectDTO = connectDTO;
     }
 
-    // Get one available room per room type without date filter
+    // Getting one available room per room type without date filter
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoom() {
         List<Integer> availableRoomNumbers = roomRepo.findOneRoomNoPerRoomType();
-
+//              availableRoomNumbers=new ArrayList<>();
+//        availableRoomNumbers.removeAll();
         if (availableRoomNumbers.isEmpty()) {
             throw new RoomNotAvailableException("No available rooms found at all.");
         }
@@ -30,25 +31,25 @@ public class PopulateEveryRoomType {
         return connectDTO.getRoomTypesWithOneRoom(availableRoomNumbers);
     }
 
-    // Get one available room per room type considering date range
+    // Getting one available room per room type considering date range
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoomOutsideDateRange(Date checkIn, Date checkOut) {
-        // Step 1: Get available rooms without date filter
+        //  Getting available rooms without date filter
         List<RoomTypeWithSingleRoomDTO> defaultRoomList = getAvailableRoom();
 
-        // Step 2: Store already covered room type IDs
+        //  Store already covered room type IDs
         Set<Integer> coveredRoomTypeIds = new HashSet<>();
         for (RoomTypeWithSingleRoomDTO room : defaultRoomList) {
             coveredRoomTypeIds.add(room.getId());
         }
 
-        // Step 3: Get available room numbers for the given date range
+        // Get available room numbers for the given date range
         List<Integer> roomNumbersInRange = roomRepo.findAvailableRoomsByDateRange(checkIn, checkOut);
 
         if (roomNumbersInRange.isEmpty()) {
             return defaultRoomList; // ✅ No new rooms, return default list
         }
 
-        // Step 4: Choose the smallest room number per new room type
+        // Choose the smallest room number per new room type
         Map<Integer, Integer> oneRoomPerNewType = new HashMap<>();
         for (Integer roomNumber : roomNumbersInRange) {
             int roomTypeId = roomNumber / 100;
@@ -59,14 +60,14 @@ public class PopulateEveryRoomType {
             }
         }
 
-        // Step 5: Convert new room numbers to DTOs
+        // Convert new room numbers to DTOs
         List<Integer> newRoomNumbers = new ArrayList<>(oneRoomPerNewType.values());
         List<RoomTypeWithSingleRoomDTO> newRoomDTOs = connectDTO.getRoomTypesWithOneRoom(newRoomNumbers);
 
-        // Step 6: Merge both lists
+        //  Merge both lists
         defaultRoomList.addAll(newRoomDTOs);
 
-        // Step 7: Sort by room type ID
+        // Sort by room type ID
         defaultRoomList.sort(Comparator.comparingInt(RoomTypeWithSingleRoomDTO::getId));
 
         return defaultRoomList;

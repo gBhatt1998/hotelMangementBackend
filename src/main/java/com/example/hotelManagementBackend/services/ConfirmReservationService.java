@@ -47,7 +47,7 @@ public class ConfirmReservationService {
         //Populate the guest details
         Guest guest = processGuest(request.getGuestDetails());
 
-        //get services
+        //Get services
         List<Service> selectedServices = new ArrayList<>();
         if (request.getServiceIds() != null && !request.getServiceIds().isEmpty()) {
             selectedServices = serviceRepo.findAllById(request.getServiceIds());
@@ -69,14 +69,14 @@ public class ConfirmReservationService {
         room.setAvailability(false);
         roomRepo.save(room); //
 
-        //add details of reservation
+        //Add details of reservation
         Reservation reservation = new Reservation();
         reservation.setCheckInDate(request.getCheckInDate());
         reservation.setCheckOutDate(request.getCheckOutDate());
         reservation.setRoom(room);
         reservation.setTotalPrice(request.getTotalPrice());
 
-//        roomRepo.confirmRoom(request.getRoomId());
+        //roomRepo.confirmRoom(request.getRoomId());
         reservation.setGuest(guest);
         return reservationRepo.save(reservation);
     }
