@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.processing.Generated;
+import java.security.Principal;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -99,10 +100,13 @@ public class ReservationController {
 
     @PostMapping("/confirmed")
     public ResponseEntity<?> createReservation(@Valid
-                                               @RequestBody ReservationRequest request) {
+                                               @RequestBody ReservationRequest request , Principal principal) {
 
+        String email = principal.getName();
+        Reservation reservation = confirmReservationService.createReservation(request,email);
 
-        Reservation reservation = confirmReservationService.createReservation(request);
+        // or use SecurityContext
+
 //        populateEveryRoomType.resetRoomMap();
         String message = "Reservation confirmed for room " + reservation.getRoom().getRoomNo();
 

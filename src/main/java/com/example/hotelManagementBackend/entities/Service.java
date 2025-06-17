@@ -25,6 +25,10 @@ public class Service {
     @ManyToMany(mappedBy = "services")
     @JsonIgnore
     private List<Guest> guests = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "services")
+    @JsonIgnore
+    private List<Reservation> reservations = new ArrayList<>();
     // Constructors, getters, and setters
     public Service() {}
 
@@ -68,6 +72,14 @@ public class Service {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
     public List<Guest> getGuests() {

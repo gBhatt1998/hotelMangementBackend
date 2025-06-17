@@ -13,22 +13,18 @@ public interface RoomTypeRepository extends JpaRepository<RoomType,Integer> {
 
 
 
-    @Query("""
-    SELECT new com.example.hotelManagementBackend.dto.RoomTypeWithSingleRoomDTO(
-        rt.id, rt.type, rt.description, rt.pricePerNight, MIN(r.roomNo), rt.imageUrl
-    )
-    FROM Room r
-    JOIN r.roomType rt
-    WHERE r.availability = true
-      AND NOT EXISTS (
-          SELECT res FROM Reservation res
-          WHERE res.room = r
-            AND res.checkInDate <= :checkOutDate
-            AND res.checkOutDate >= :checkInDate
-      )
-    GROUP BY rt.id, rt.type, rt.description, rt.pricePerNight, rt.imageUrl
-    """)
-    List<RoomTypeWithSingleRoomDTO> getAvailableRoomTypesWithMinRoomNoInDateRange(
+    @Query("SELECT new com.example.hotelManagementBackend.dto.RoomTypeWithSingleRoomDTO(" +
+            "rt.id, rt.type, rt.description, rt.pricePerNight, MIN(r.roomNo), rt.imageUrl) " +
+            "FROM Room r " +
+            "JOIN r.roomType rt " +
+            "WHERE NOT EXISTS (" +
+            "SELECT res FROM Reservation res " +
+            "WHERE res.room = r " +
+            "AND res.checkInDate <= :checkOutDate " +
+            "AND res.checkOutDate >= :checkInDate" +
+            ") " +
+            "GROUP BY rt.id, rt.type, rt.description, rt.pricePerNight, rt.imageUrl")
+    List<RoomTypeWithSingleRoomDTO> findRoomTypesWithAvailableRoomByDateRange(
             @Param("checkInDate") Date checkInDate,
             @Param("checkOutDate") Date checkOutDate
     );

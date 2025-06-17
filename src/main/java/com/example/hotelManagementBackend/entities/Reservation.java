@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Entity
 public class Reservation {
@@ -33,7 +36,13 @@ public class Reservation {
     public Guest getGuest() {
         return guest;
     }
-
+    @ManyToMany
+    @JoinTable(
+            name = "reservation_services",
+            joinColumns = @JoinColumn(name = "reservation_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private List<Service> services = new ArrayList<>();
     public void setGuest(Guest guest) {
         this.guest = guest;
     }
@@ -44,6 +53,14 @@ public class Reservation {
 
     public void setRoom(Room room) {
         this.room = room;
+    }
+
+    public List<Service> getServices() {
+        return services;
+    }
+
+    public void setServices(List<Service> services) {
+        this.services = services;
     }
 
     public float getTotalPrice() {

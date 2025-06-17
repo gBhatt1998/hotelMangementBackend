@@ -83,7 +83,7 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
                         .requestMatchers( "/api/auth/**", "/reservation/**","/room-types/**","/error" ).permitAll()
-                        .requestMatchers("/guest/**").hasRole("USER")
+                        .requestMatchers("/guest/**").hasAnyRole("USER","ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

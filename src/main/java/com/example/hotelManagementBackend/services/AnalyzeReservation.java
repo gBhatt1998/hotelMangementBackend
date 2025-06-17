@@ -22,7 +22,7 @@ public class AnalyzeReservation {
 
     private Map<Integer, Map<String, Object>> roomTypeDataMap;
 
-    @PostConstruct
+//    @PostConstruct
     public void initializeRoomTypeMap() {
         this.roomTypeDataMap = buildRoomTypeDataMap();
 //        System.out.println("RoomType data map initialized:");

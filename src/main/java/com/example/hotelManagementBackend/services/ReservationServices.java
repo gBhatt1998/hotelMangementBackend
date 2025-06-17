@@ -73,11 +73,23 @@ public class ReservationServices {
         System.out.println(/*                     */);
         System.out.print("query room list"+ roomTypeRepo.getAllRoomTypesWithMinimumRoomNo());
 
-        return populateEveryRoomType.getAvailableRoom();
+        return roomTypeRepo.getAllRoomTypesWithMinimumRoomNo();
     }
 
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoomOutsideDateRange(Date checkIn, Date checkOut) {
-        return populateEveryRoomType.getAvailableRoomOutsideDateRange(checkIn, checkOut);
+        System.out.println("///////////////////////////////////////");
+
+        System.out.println("Date by old function");
+//        System.out.println("date range"+populateEveryRoomType.getAvailableRoomOutsideDateRange(checkIn, checkOut));
+        System.out.println("///////////////////////////////////////");
+        System.out.println("///////////////////////////////////////");
+        System.out.println("///////////////////////////////////////");
+
+        System.out.println("Date by new  function");
+//        System.out.println("date range"+roomTypeRepo.findRoomTypesWithAvailableRoomByDateRange(checkIn, checkOut));
+        System.out.println("///////////////////////////////////////");
+
+        return roomTypeRepo.findRoomTypesWithAvailableRoomByDateRange(checkIn, checkOut);
     }
 
 

@@ -39,66 +39,53 @@ public class ConfirmReservationService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Reservation createReservation(ReservationRequest request) {
+    public Reservation createReservation(ReservationRequest request, String email) {
 
         if (request.getCheckInDate().after(request.getCheckOutDate())) {
             throw new InvalidDateRangeException("Check-out date must be after check-in date");
         }
+
+        Guest guest = guestRepo.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Guest not found with email: " + email));
+
         //Populate the guest details
-        Guest guest = processGuest(request.getGuestDetails());
+//        Guest guest = processGuest(request.getGuestDetails());
 
         //Get services
+        // 💼 Fetch selected services
         List<Service> selectedServices = new ArrayList<>();
         if (request.getServiceIds() != null && !request.getServiceIds().isEmpty()) {
             selectedServices = serviceRepo.findAllById(request.getServiceIds());
-            // Add guest to services
-            selectedServices.forEach(service -> {
+
+            // Optional: link guest to services if needed (not required for reservation)
+            for (Service service : selectedServices) {
                 if (!guest.getServices().contains(service)) {
                     guest.getServices().add(service);
                     service.getGuests().add(guest);
                 }
-            });
+            }
         }
+
+
         // Get room and update availability
         Room room = roomRepo.findById(request.getRoomId())
-                .orElseThrow(() -> new RoomNotFoundException(
-                        "Room not found with ID: " + request.getRoomId()
-                ));
-
-        // Update room status
+                .orElseThrow(() -> new RoomNotFoundException("Room not found with ID: " + request.getRoomId()));
         room.setAvailability(false);
-        roomRepo.save(room); //
+        roomRepo.save(room);
 
         //Add details of reservation
         Reservation reservation = new Reservation();
         reservation.setCheckInDate(request.getCheckInDate());
         reservation.setCheckOutDate(request.getCheckOutDate());
         reservation.setRoom(room);
-        reservation.setTotalPrice(request.getTotalPrice());
-
-        //roomRepo.confirmRoom(request.getRoomId());
         reservation.setGuest(guest);
+        reservation.setTotalPrice(request.getTotalPrice());
+        reservation.setServices(selectedServices); //
+
         return reservationRepo.save(reservation);
     }
 
 
-    private Guest processGuest(ReservationRequest.GuestDetails details) {
-        return guestRepo.findByEmail(details.getEmail())
-                .map(existingGuest -> {
-                    if (!passwordEncoder.matches(details.getPassword(), existingGuest.getPassword())) {
-                        throw new WrongPasswordException("Incorrect password for existing user");
-                    }
-                    return existingGuest;
-                })
-                .orElseGet(() -> {
-                    Guest newGuest = new Guest();
-                    newGuest.setName(details.getName());
-                    newGuest.setEmail(details.getEmail());
-                    newGuest.setPassword(passwordEncoder.encode(details.getPassword()));
-                    newGuest.setPhone(details.getPhone());
-                    newGuest.setRole("ROLE_" + details.getRole().toUpperCase());
-                    return guestRepo.save(newGuest);
-                });
-    }
+
 
 }

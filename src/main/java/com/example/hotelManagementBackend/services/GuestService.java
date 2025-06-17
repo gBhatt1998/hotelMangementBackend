@@ -79,7 +79,7 @@ public class GuestService {
 
         //  guest details
         ReservationDetailsResponse.GuestDetails guestDto = new ReservationDetailsResponse.GuestDetails();
-        guestDto.setId(guest.getId());
+//        guestDto.setId(guest.getId());
         guestDto.setName(guest.getName());
         guestDto.setEmail(guest.getEmail());
         guestDto.setPhone(guest.getPhone());

@@ -59,4 +59,8 @@ public class Room {
     public void setRoomTypeId(RoomType roomTypeId) {
         this.roomType = roomTypeId;
     }
+
+    public RoomType getRoomType() { return roomType; }
+    public void setRoomType(RoomType roomType) { this.roomType = roomType; }
+
 }

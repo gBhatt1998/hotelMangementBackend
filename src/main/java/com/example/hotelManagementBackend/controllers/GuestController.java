@@ -25,7 +25,7 @@ public class GuestController {
     private GuestService guestService;
 
     @GetMapping("/guest/reservations")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<GuestReservationsResponse > getGuestReservations(
             @AuthenticationPrincipal GuestDetails guestDetails) {
         String email = guestDetails.getUsername(); // email is used as username
