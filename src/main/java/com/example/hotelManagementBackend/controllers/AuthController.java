@@ -5,8 +5,10 @@ import com.example.hotelManagementBackend.Auth.JwtUtil;
 import com.example.hotelManagementBackend.Exception.CustomException;
 import com.example.hotelManagementBackend.dto.AuthRequest;
 import com.example.hotelManagementBackend.dto.AuthResponse;
+import com.example.hotelManagementBackend.dto.SignupRequestDTO;
 import com.example.hotelManagementBackend.entities.Guest;
 import com.example.hotelManagementBackend.repositories.GuestRepository;
+import com.example.hotelManagementBackend.services.GuestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,10 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private GuestService guestService;
+
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
         try {
@@ -53,6 +59,15 @@ public class AuthController {
 
         return ResponseEntity.ok(new AuthResponse(token));
     }
+
+
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignupRequestDTO signupRequest) {
+        Guest guest = guestService.registerGuest(signupRequest);
+        String token = jwtUtil.generateToken(new GuestDetails(guest));
+        return ResponseEntity.ok(new AuthResponse(token));
+    }
+
 
 
 }
