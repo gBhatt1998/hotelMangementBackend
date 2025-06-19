@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 //import org.springframework.stereotype.Service;
 import com.example.hotelManagementBackend.entities.Service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -75,8 +76,8 @@ public class ConfirmReservationService {
 
         //Add details of reservation
         Reservation reservation = new Reservation();
-        reservation.setCheckInDate(request.getCheckInDate());
-        reservation.setCheckOutDate(request.getCheckOutDate());
+        reservation.setCheckInDate(Date.valueOf(request.getCheckInDate().toString()));
+        reservation.setCheckOutDate(Date.valueOf(request.getCheckOutDate().toString()));
         reservation.setRoom(room);
         reservation.setGuest(guest);
         reservation.setTotalPrice(request.getTotalPrice());

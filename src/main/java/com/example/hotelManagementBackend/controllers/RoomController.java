@@ -20,9 +20,16 @@ public class RoomController {
     @Autowired private RoomService service;
 
     @GetMapping
-    public ResponseEntity<List<RoomResponseDTO>> getAllRooms() {
-        return ResponseEntity.ok(service.getAllRoomsWithDeleteFlag());
+    public ResponseEntity<List<RoomResponseDTO>> getAllRooms(@RequestParam(required = false) String roomType) {
+        List<RoomResponseDTO> rooms;
+        if (roomType == null || roomType.isEmpty()) {
+            rooms = service.getAllRoomsWithDeleteFlag();
+        } else {
+            rooms = service.getRoomsByRoomType(roomType);
+        }
+        return ResponseEntity.ok(rooms);
     }
+
 
     @PostMapping
     public ResponseEntity<RoomResponseDTO> create(@RequestBody RoomRequestDTO dto) {
@@ -46,5 +53,16 @@ public class RoomController {
     public ResponseEntity<Integer> suggestNextRoomNumber(@PathVariable int roomTypeId) {
         return ResponseEntity.ok(service.suggestNextRoomNumber(roomTypeId));
     }
+
+    @GetMapping("/suggest-room-numbers")
+    public ResponseEntity<List<Integer>> suggestRoomNumbers(
+            @RequestParam int roomTypeId,
+            @RequestParam int baseRoomNo,
+            @RequestParam int count
+    ) {
+        List<Integer> suggestions = service.suggestRoomNumbers(roomTypeId, baseRoomNo, count);
+        return ResponseEntity.ok(suggestions);
+    }
+
 
 }

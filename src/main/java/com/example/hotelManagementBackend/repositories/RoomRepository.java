@@ -48,6 +48,11 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
     @Query("SELECT MAX(r.roomNo) FROM Room r WHERE r.roomNo BETWEEN :start AND :end")
     Integer  findMaxRoomNoForType(@Param("start") int start, @Param("end") int end);
 
+    List<Room> findByRoomType_Type(String type);
+
+
+    @Query("SELECT r.roomNo FROM Room r WHERE r.roomNo IN :roomNos")
+    List<Integer> findExistingRoomNos(List<Integer> roomNos);
 
 
 

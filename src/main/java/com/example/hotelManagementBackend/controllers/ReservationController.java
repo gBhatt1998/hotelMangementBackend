@@ -15,6 +15,7 @@ import com.example.hotelManagementBackend.services.AvailableServices;
 import com.example.hotelManagementBackend.services.ConfirmReservationService;
 import com.example.hotelManagementBackend.services.PopulateEveryRoomType;
 import com.example.hotelManagementBackend.services.ReservationServices;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -106,6 +107,8 @@ public class ReservationController {
         Reservation reservation = confirmReservationService.createReservation(request,email);
 
         // or use SecurityContext
+//        System.out.println("Request: " + new ObjectMapper().writeValueAsString(request));
+
 
 //        populateEveryRoomType.resetRoomMap();
         String message = "Reservation confirmed for room " + reservation.getRoom().getRoomNo();

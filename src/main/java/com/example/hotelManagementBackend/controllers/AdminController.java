@@ -42,14 +42,15 @@ public class AdminController {
     @GetMapping("/allreservation")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ReservationDetailsResponse>> getGuestReservations(
+            @RequestParam(required = false) String roomType,
             @AuthenticationPrincipal GuestDetails guestDetails) {
-        String email = guestDetails.getUsername(); // email is used as username
-        System.out.println("Authenticated user: " + guestDetails.getUsername());
-        System.out.println("Authorities: " + guestDetails.getAuthorities());
-        // Your CustomGuestDetails should expose guest ID
-        List<ReservationDetailsResponse> reservations = reservationDetailsResponseService.getAllReservationDetails();
+
+        List<ReservationDetailsResponse> reservations =
+                reservationDetailsResponseService.getAllReservationDetails(roomType);
+
         return ResponseEntity.ok(reservations);
     }
+
 
     @GetMapping("/analytics/department-employee-count")
     @PreAuthorize("hasRole('ADMIN')")

@@ -37,12 +37,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 //    List<Reservation> findByGuestIdWithRoom(@Param("guestId") int guestId);
 
     // For admin - get all reservations with all relationships
-    @Query("SELECT  r FROM Reservation r " +
+    @Query("SELECT r FROM Reservation r " +
             "JOIN FETCH r.guest g " +
             "JOIN FETCH r.room rm " +
             "JOIN FETCH rm.roomType rt " +
-            "LEFT JOIN FETCH g.services s")
-    List<Reservation> findAllWithDetails();
+            "LEFT JOIN FETCH g.services s " +
+            "WHERE (:roomType IS NULL OR rt.type = :roomType)")
+    List<Reservation> findAllWithDetailsFiltered(@Param("roomType") String roomType);
 
     // For guest - get reservations by guest ID with all relationships
     @Query("SELECT  r FROM Reservation r " +

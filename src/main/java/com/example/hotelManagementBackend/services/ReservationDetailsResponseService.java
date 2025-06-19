@@ -22,15 +22,16 @@ public class ReservationDetailsResponseService {
     private GuestRepository guestRepository;
 
     // ReservationServices.java
-    public List<ReservationDetailsResponse> getAllReservationDetails() {
-        List<Reservation> reservations = reservationRepository.findAllWithDetails();
-        System.out.print("//------------------------//");
-        System.out.println("reservation" +reservations);
-        System.out.print("//------------------------//");
+    public List<ReservationDetailsResponse> getAllReservationDetails(String roomType) {
+        List<Reservation> reservations = reservationRepository.findAllWithDetailsFiltered(
+                (roomType == null || roomType.isEmpty()) ? null : roomType
+        );
+
         return reservations.stream()
                 .map(this::mapToDetailsResponse)
                 .toList();
     }
+
 
     /* made again  in guest services */
 

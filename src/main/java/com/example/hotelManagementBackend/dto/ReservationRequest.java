@@ -5,17 +5,19 @@ import jakarta.validation.constraints.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Date;
 import java.util.List;
 
 public class ReservationRequest {
     @NotNull(message = "Check-in date is required")
-//    @FutureOrPresent(message = "Check-in date must be today or in the future")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date checkInDate;
 
     @NotNull(message = "Check-out date is required")
-    @Future(message = "Check-out date must be in the future")
+//    @Future(message = "Check-out date must be in the future")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date checkOutDate;
 
     @Positive(message = "Total price must be positive")
