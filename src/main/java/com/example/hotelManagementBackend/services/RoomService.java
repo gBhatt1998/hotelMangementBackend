@@ -52,18 +52,18 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
-    public Room createRoom(RoomRequestDTO dto) {
-        RoomType type = roomTypeRepo.findById(dto.getRoomTypeId())
-                .orElseThrow(() -> new RuntimeException("Room type not found"));
-
-        int newRoomNo = calculateNextRoomNumber(dto.getRoomTypeId());
-
-        Room room = new Room();
-        room.setRoomNo(newRoomNo);
-        room.setRoomTypeId(type);
-        room.setAvailability(dto.getAvailability());
-        return roomRepo.save(room);
-    }
+//    public Room createRoom(RoomRequestDTO dto) {
+//        RoomType type = roomTypeRepo.findById(dto.getRoomTypeId())
+//                .orElseThrow(() -> new RuntimeException("Room type not found"));
+//
+////        int newRoomNo = calculateNextRoomNumber(dto.getRoomTypeId());
+//
+//        Room room = new Room();
+////        room.setRoomNo(newRoomNo);
+//        room.setRoomTypeId(type);
+//        room.setAvailability(dto.getAvailability());
+//        return roomRepo.save(room);
+//    }
 
     public void deleteRoom(int roomNo) {
         Room room = roomRepo.findById(roomNo)
@@ -74,20 +74,49 @@ public class RoomService {
         roomRepo.deleteById(roomNo);
     }
 
-    public int suggestNextRoomNumber(int roomTypeId) {
-        if (!roomTypeRepo.existsById(roomTypeId)) {
-            throw new RuntimeException("Room type not found");
+//    public int suggestNextRoomNumber(int roomTypeId) {
+//        if (!roomTypeRepo.existsById(roomTypeId)) {
+//            throw new RuntimeException("Room type not found");
+//        }
+//        return calculateNextRoomNumber(roomTypeId);
+//    }
+
+//    private int calculateNextRoomNumber(int roomTypeId) {
+//        int base = roomTypeId * 100;
+//        Integer max = roomRepo.findMaxRoomNoForType(base, base + 99);
+//        return (max == null || max == 0) ? base + 1 : max + 1;
+//    }
+public List<Room> createRooms(List<RoomRequestDTO> dtos) {
+    List<Room> roomsToSave = new ArrayList<>();
+
+    for (RoomRequestDTO dto : dtos) {
+        RoomType type = roomTypeRepo.findById(dto.getRoomTypeId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "RoomType not found: " + dto.getRoomTypeId()));
+
+        if (roomRepo.existsById(dto.getRoomNo())) {
+            throw new CustomException(HttpStatus.CONFLICT, "Room number " + dto.getRoomNo() + " already exists.");
         }
-        return calculateNextRoomNumber(roomTypeId);
+
+        Room room = new Room();
+        room.setRoomNo(dto.getRoomNo());
+        room.setRoomTypeId(type);
+        room.setAvailability(dto.isAvailability());
+        roomsToSave.add(room);
     }
 
-    private int calculateNextRoomNumber(int roomTypeId) {
-        int base = roomTypeId * 100;
-        Integer max = roomRepo.findMaxRoomNoForType(base, base + 99);
-        return (max == null || max == 0) ? base + 1 : max + 1;
-    }
+    return roomRepo.saveAll(roomsToSave);
+}
 
     public List<Integer> suggestRoomNumbers(int roomTypeId, int baseRoomNo, int count) {
+        if (!roomTypeRepo.existsById(roomTypeId)) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Room type not found");
+        }
+
+        // 🔐 Check if baseRoomNo already exists
+        if (roomRepo.existsByRoomNo(baseRoomNo)) {
+            throw new CustomException(HttpStatus.CONFLICT, "Base room number " + baseRoomNo + " already exists.");
+        }
+
         List<Integer> finalSuggestions = new ArrayList<>();
         int current = baseRoomNo;
 
@@ -124,6 +153,7 @@ public class RoomService {
 
         return finalSuggestions;
     }
+
 
 
 }

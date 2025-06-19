@@ -1,6 +1,7 @@
 package com.example.hotelManagementBackend.controllers;
 
 import com.example.hotelManagementBackend.Exception.CustomException;
+import com.example.hotelManagementBackend.dto.RoomListRequestDTO;
 import com.example.hotelManagementBackend.dto.RoomRequestDTO;
 import com.example.hotelManagementBackend.dto.RoomResponseDTO;
 import com.example.hotelManagementBackend.entities.Room;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/rooms")
@@ -31,10 +33,20 @@ public class RoomController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<RoomResponseDTO> create(@RequestBody RoomRequestDTO dto) {
-        return new ResponseEntity<>(RoomMapper.toResponseDTO(service.createRoom(dto), true), HttpStatus.CREATED);
+//    @PostMapping
+//    public ResponseEntity<RoomResponseDTO> create(@RequestBody RoomRequestDTO dto) {
+//        return new ResponseEntity<>(RoomMapper.toResponseDTO(service.createRoom(dto), true), HttpStatus.CREATED);
+//    }
+
+    @PostMapping("/batch")
+    public ResponseEntity<List<RoomResponseDTO>> createRooms(@RequestBody RoomListRequestDTO dto) {
+        List<Room> savedRooms = service.createRooms(dto.getRooms());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(savedRooms.stream()
+                        .map(room -> RoomMapper.toResponseDTO(room, true))
+                        .collect(Collectors.toList()));
     }
+
 
     @DeleteMapping("/{roomNo}")
     public ResponseEntity<Void> delete(@PathVariable int roomNo) {
@@ -49,10 +61,10 @@ public class RoomController {
     }
 
 
-    @GetMapping("/suggest-next/{roomTypeId}")
-    public ResponseEntity<Integer> suggestNextRoomNumber(@PathVariable int roomTypeId) {
-        return ResponseEntity.ok(service.suggestNextRoomNumber(roomTypeId));
-    }
+//    @GetMapping("/suggest-next/{roomTypeId}")
+//    public ResponseEntity<Integer> suggestNextRoomNumber(@PathVariable int roomTypeId) {
+//        return ResponseEntity.ok(service.suggestNextRoomNumber(roomTypeId));
+//    }
 
     @GetMapping("/suggest-room-numbers")
     public ResponseEntity<List<Integer>> suggestRoomNumbers(

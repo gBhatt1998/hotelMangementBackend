@@ -54,6 +54,7 @@ public interface RoomRepository extends JpaRepository<Room,Integer> {
     @Query("SELECT r.roomNo FROM Room r WHERE r.roomNo IN :roomNos")
     List<Integer> findExistingRoomNos(List<Integer> roomNos);
 
+    boolean existsByRoomNo(int roomNo);
 
 
 }
