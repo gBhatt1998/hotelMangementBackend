@@ -10,7 +10,12 @@ import com.example.hotelManagementBackend.repositories.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import java.sql.Date;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 public class ReservationDetailsResponseService {
@@ -31,20 +36,6 @@ public class ReservationDetailsResponseService {
                 .map(this::mapToDetailsResponse)
                 .toList();
     }
-
-
-    /* made again  in guest services */
-
-//    public List<ReservationDetailsResponse> getReservationsByGuest(String email) {
-//
-//        int guestId = guestRepository.findByEmail(email)
-//                .map(guest ->  guest.getId())
-//                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND,"Guest not found"));
-//        List<Reservation> reservations = reservationRepository.findByGuestIdWithDetails(guestId);
-//        return reservations.stream()
-//                .map(this::mapToDetailsResponse)
-//                .toList();
-//    }
 
     private ReservationDetailsResponse mapToDetailsResponse(Reservation reservation) {
         ReservationDetailsResponse response = new ReservationDetailsResponse();
@@ -74,5 +65,75 @@ public class ReservationDetailsResponseService {
         response.setGuest(guestDetails);
 
         return response;
+    }
+
+
+
+    public List<ReservationDetailsResponse> getFilteredReservations(String roomTypeName, String dateFilter, int month, int year) {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate;
+        LocalDate endDate;
+        boolean applyDateFilter = true;
+
+        switch (dateFilter.toLowerCase()) {
+            case "today":
+                startDate = today;
+                endDate = today;
+                break;
+            case "week":
+                startDate = today.with(DayOfWeek.SUNDAY);
+                endDate = today.with(DayOfWeek.SATURDAY);
+                break;
+            case "month":
+                startDate = LocalDate.of(year, month, 1);
+                endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+                break;
+            case "all":
+            default:
+                applyDateFilter = false;
+                startDate = today;
+                endDate = today;
+                break;
+        }
+
+        Date sqlStart = Date.valueOf(startDate);
+        Date sqlEnd = Date.valueOf(endDate);
+
+        List<Reservation> reservations = reservationRepository.findByRoomTypeAndDateRange(
+                (roomTypeName == null || roomTypeName.isBlank()) ? null : roomTypeName,
+                applyDateFilter,
+                sqlStart,
+                sqlEnd
+        );
+
+        return reservations.stream()
+                .map(this::mapToReservationDetailsResponse)
+                .collect(Collectors.toList());
+    }
+
+    private ReservationDetailsResponse mapToReservationDetailsResponse(Reservation r) {
+        ReservationDetailsResponse dto = new ReservationDetailsResponse();
+        dto.setReservationId((long) r.getReservationId());
+        dto.setCheckInDate(r.getCheckInDate());
+        dto.setCheckOutDate(r.getCheckOutDate());
+        dto.setTotalPrice(r.getTotalPrice());
+        dto.setRoomNumber(r.getRoom().getRoomNo());
+        dto.setRoomTypeName(r.getRoom().getRoomTypeId().getType());
+
+        // Services
+        List<String> serviceNames = r.getServices() != null ?
+                r.getServices().stream().map(s -> s.getName()).toList() :
+                new ArrayList<>();
+        dto.setServiceNames(serviceNames);
+
+        // Guest
+        ReservationDetailsResponse.GuestDetails guestDetails = new ReservationDetailsResponse.GuestDetails();
+//        guestDetails.setId(r.getGuest().getGuestId());
+        guestDetails.setName(r.getGuest().getName());
+        guestDetails.setEmail(r.getGuest().getEmail());
+        guestDetails.setPhone(r.getGuest().getPhone());
+        dto.setGuest(guestDetails);
+
+        return dto;
     }
 }

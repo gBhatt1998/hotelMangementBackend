@@ -78,4 +78,29 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 
 
 
+    @Query("""
+SELECT DISTINCT r FROM Reservation r
+JOIN FETCH r.guest g
+JOIN FETCH r.room rm
+JOIN FETCH rm.roomType rt
+LEFT JOIN FETCH r.services s
+WHERE (:roomType IS NULL OR LOWER(rt.type) = LOWER(:roomType))
+AND (
+  (:applyDateFilter = false OR (
+    r.checkInDate <= :dateRangeEnd AND
+    r.checkOutDate >= :dateRangeStart
+  ))
+)
+""")
+    List<Reservation> findByRoomTypeAndDateRange(
+            @Param("roomType") String roomType,
+            @Param("applyDateFilter") boolean applyDateFilter,
+            @Param("dateRangeStart") Date dateRangeStart,
+            @Param("dateRangeEnd") Date dateRangeEnd
+    );
+
+
+
+
+
 }

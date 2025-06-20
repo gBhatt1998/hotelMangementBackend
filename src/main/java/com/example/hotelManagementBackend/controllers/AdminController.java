@@ -58,5 +58,18 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getEmployeeCountPerDepartment());
     }
 
+    @GetMapping("/filtered")
+    public ResponseEntity<List<ReservationDetailsResponse>> getFilteredReservations(
+            @RequestParam(required = false) String roomTypeName,
+            @RequestParam String dateFilter,
+            @RequestParam int month,
+            @RequestParam int year
+    ) {
+        List<ReservationDetailsResponse> response = reservationDetailsResponseService.getFilteredReservations(
+                roomTypeName, dateFilter, month, year
+        );
+        return ResponseEntity.ok(response);
+    }
+
 
 }
