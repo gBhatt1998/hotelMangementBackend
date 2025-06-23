@@ -81,8 +81,10 @@ public class ReservationDetailsResponseService {
                 endDate = today;
                 break;
             case "week":
-                startDate = today.with(DayOfWeek.SUNDAY);
-                endDate = today.with(DayOfWeek.SATURDAY);
+                LocalDate startOfWeek = today.minusDays(today.getDayOfWeek().getValue() % 7);
+                LocalDate endOfWeek = startOfWeek.plusDays(6);
+                startDate = startOfWeek;
+                endDate = endOfWeek;
                 break;
             case "month":
                 startDate = LocalDate.of(year, month, 1);
