@@ -17,8 +17,6 @@ public class RoomTypeService {
     @Autowired
     private RoomTypeRepository roomTypeRepository;
 
-    @Autowired
-    private AnalyzeReservation analyzeReservation;
 
     public List<RoomType> getAllRoomTypes() {
         return roomTypeRepository.findAll();
@@ -26,7 +24,6 @@ public class RoomTypeService {
 
     public RoomType createRoomType(RoomType roomType) {
         RoomType created = roomTypeRepository.save(roomType);
-        analyzeReservation.refreshRoomTypeData();
         return created;
     }
 
@@ -35,7 +32,6 @@ public class RoomTypeService {
                 .orElseThrow(() -> new RuntimeException("Room type not found with id " + id));
         RoomTypeMapper.updateEntity(existing, dto);
         RoomType updated = roomTypeRepository.save(existing);
-        analyzeReservation.refreshRoomTypeData();
         return updated;
     }
 
@@ -53,6 +49,5 @@ public class RoomTypeService {
         }
 
         roomTypeRepository.delete(roomType);
-        analyzeReservation.refreshRoomTypeData();
     }
 }

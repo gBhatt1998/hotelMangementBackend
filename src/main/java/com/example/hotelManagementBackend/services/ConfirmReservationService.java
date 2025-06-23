@@ -49,10 +49,8 @@ public class ConfirmReservationService {
         Guest guest = guestRepo.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Guest not found with email: " + email));
 
-        //Populate the guest details
-//        Guest guest = processGuest(request.getGuestDetails());
 
-        //Get services
+
         // 💼 Fetch selected services
         List<Service> selectedServices = new ArrayList<>();
         if (request.getServiceIds() != null && !request.getServiceIds().isEmpty()) {

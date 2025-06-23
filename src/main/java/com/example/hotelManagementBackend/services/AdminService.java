@@ -68,15 +68,7 @@ public class AdminService {
             } // Also delete guest if no other reservation
         }
 
-//        List<Service> Remove = serviceRepo.findServicesByReservationId(reservationId);
-//        for (Service service : Remove) {
-//            guest.removeService(service);
-//        }
 
-//        reservationRepo.delete(reservation);
-//        if (!reservationRepo.existsByGuestId(guestId)) {
-//            guestRepo.deleteById(guestId);
-//        }
     }
 
     public List<Map<String, Object>> getEmployeeCountPerDepartment() {

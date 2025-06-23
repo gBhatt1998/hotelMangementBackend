@@ -26,34 +26,14 @@ public class ReservationServices {
     private RoomTypeRepository roomTypeRepo;
     @Autowired
     private ReservationRepository reservationRepo;
-    @Autowired
-    private AnalyzeReservation analyzeReservation;
 
-    @Autowired
-    private ConnectEveryRoomTypeWithDTO connectEveryRoomTypeWithDTO;
-
-    @Autowired
-    private PopulateEveryRoomType populateEveryRoomType;
 
 
     public RoomType createRoomType( RoomType roomType){
       return roomTypeRepo.save(roomType);
     }
 
-//    public Room createRoom(Room room){
-//
-//        if (room == null) {
-//            throw new IllegalArgumentException("RoomType must not be null");
-//        }
-//
-//
-//
-//        Integer roomTypeId = room.getRoomTypeId().getId();
-//        RoomType roomType =roomTypeRepo.findById(roomTypeId)
-//                .orElseThrow(()->new RuntimeException("Invalid RoomType Id"));
-//        room.setRoomTypeId(roomType);
-//        return roomRepo.save(room);
-//    }
+
 
     public Room addRoom(int id, Room room){
         Optional<RoomType> r = roomTypeRepo.findById(id);
@@ -77,17 +57,10 @@ public class ReservationServices {
     }
 
     public List<RoomTypeWithSingleRoomDTO> getAvailableRoomOutsideDateRange(Date checkIn, Date checkOut) {
-        System.out.println("///////////////////////////////////////");
 
-        System.out.println("Date by old function");
-//        System.out.println("date range"+populateEveryRoomType.getAvailableRoomOutsideDateRange(checkIn, checkOut));
-        System.out.println("///////////////////////////////////////");
-        System.out.println("///////////////////////////////////////");
-        System.out.println("///////////////////////////////////////");
+
 
         System.out.println("Date by new  function");
-//        System.out.println("date range"+roomTypeRepo.findRoomTypesWithAvailableRoomByDateRange(checkIn, checkOut));
-        System.out.println("///////////////////////////////////////");
 
         return roomTypeRepo.findRoomTypesWithAvailableRoomByDateRange(checkIn, checkOut);
     }

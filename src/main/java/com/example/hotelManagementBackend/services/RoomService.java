@@ -52,19 +52,6 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
-//    public Room createRoom(RoomRequestDTO dto) {
-//        RoomType type = roomTypeRepo.findById(dto.getRoomTypeId())
-//                .orElseThrow(() -> new RuntimeException("Room type not found"));
-//
-////        int newRoomNo = calculateNextRoomNumber(dto.getRoomTypeId());
-//
-//        Room room = new Room();
-////        room.setRoomNo(newRoomNo);
-//        room.setRoomTypeId(type);
-//        room.setAvailability(dto.getAvailability());
-//        return roomRepo.save(room);
-//    }
-
     public void deleteRoom(int roomNo) {
         Room room = roomRepo.findById(roomNo)
                 .orElseThrow(() -> new RuntimeException("Room not found"));
@@ -74,18 +61,6 @@ public class RoomService {
         roomRepo.deleteById(roomNo);
     }
 
-//    public int suggestNextRoomNumber(int roomTypeId) {
-//        if (!roomTypeRepo.existsById(roomTypeId)) {
-//            throw new RuntimeException("Room type not found");
-//        }
-//        return calculateNextRoomNumber(roomTypeId);
-//    }
-
-//    private int calculateNextRoomNumber(int roomTypeId) {
-//        int base = roomTypeId * 100;
-//        Integer max = roomRepo.findMaxRoomNoForType(base, base + 99);
-//        return (max == null || max == 0) ? base + 1 : max + 1;
-//    }
 public List<Room> createRooms(List<RoomRequestDTO> dtos) {
     List<Room> roomsToSave = new ArrayList<>();
 
@@ -112,7 +87,7 @@ public List<Room> createRooms(List<RoomRequestDTO> dtos) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Room type not found");
         }
 
-        // 🔐 Check if baseRoomNo already exists
+        //  if baseRoomNo already exists
         if (roomRepo.existsByRoomNo(baseRoomNo)) {
             throw new CustomException(HttpStatus.CONFLICT, "Base room number " + baseRoomNo + " already exists.");
         }
@@ -140,7 +115,7 @@ public List<Room> createRooms(List<RoomRequestDTO> dtos) {
             // Move the base for next batch
             current += candidates.size();
 
-            // Safety check: avoid infinite loop
+
             if (current > 9999) break;
         }
 

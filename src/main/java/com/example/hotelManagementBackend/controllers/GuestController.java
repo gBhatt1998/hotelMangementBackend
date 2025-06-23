@@ -38,7 +38,7 @@ public class GuestController {
     }
 
     @DeleteMapping("/guest/reservations/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<?> deleteGuestReservation(
             @PathVariable("id") int reservationId,
             @AuthenticationPrincipal GuestDetails guestDetails) {

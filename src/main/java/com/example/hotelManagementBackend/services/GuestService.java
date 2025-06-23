@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,6 +74,8 @@ public class GuestService {
             dto.setTotalPrice(reservation.getTotalPrice());
             dto.setRoomNumber(reservation.getRoom().getRoomNo());
             dto.setRoomTypeName(reservation.getRoom().getRoomTypeId().getType());
+            dto.setCanDelete(reservation.getCheckOutDate().toLocalDate().isAfter(LocalDate.now()));
+
 
             reservationList.add(dto);
         }

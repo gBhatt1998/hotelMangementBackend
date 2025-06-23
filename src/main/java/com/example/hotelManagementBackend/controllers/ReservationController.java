@@ -13,7 +13,7 @@ import com.example.hotelManagementBackend.repositories.ReservationRepository;
 import com.example.hotelManagementBackend.repositories.RoomTypeRepository;
 import com.example.hotelManagementBackend.services.AvailableServices;
 import com.example.hotelManagementBackend.services.ConfirmReservationService;
-import com.example.hotelManagementBackend.services.PopulateEveryRoomType;
+//import com.example.hotelManagementBackend.services.PopulateEveryRoomType;
 import com.example.hotelManagementBackend.services.ReservationServices;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
@@ -40,8 +40,8 @@ public class ReservationController {
     @Autowired
     private RoomTypeRepository roomTypeRepository;
 
-    @Autowired
-    private PopulateEveryRoomType populateEveryRoomType;
+//    @Autowired
+//    private PopulateEveryRoomType populateEveryRoomType;
 
     @Autowired
     private ConfirmReservationService confirmReservationService;

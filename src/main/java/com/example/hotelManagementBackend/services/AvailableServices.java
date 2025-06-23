@@ -16,7 +16,6 @@ public class AvailableServices {
 
     public List<Service> getAllService(){
         List<Service> services=serviceRepository.findAll();
-        System.out.print("services"+services);
         return serviceRepository.findAll();
     }
 }

@@ -11,15 +11,16 @@ public class ReservationSummaryDTO {
     private float totalPrice;
     private int roomNumber;
     private String roomTypeName;
-//    private List<String> serviceNames;
+    private boolean canDelete;
 
-//    public List<String> getServiceNames() {
-//        return serviceNames;
-//    }
+    public boolean isCanDelete() {
+        return canDelete;
+    }
 
-//    public void setServiceNames(List<String> serviceNames) {
-//        this.serviceNames = serviceNames;
-//    }
+    public void setCanDelete(boolean canDelete) {
+        this.canDelete = canDelete;
+    }
+
 
     public String getRoomTypeName() {
         return roomTypeName;

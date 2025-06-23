@@ -24,17 +24,14 @@ public class AnalyticsService {
     public List<RevenueAggregationDTO> getMonthlyRevenue() {
         List<Object[]> rawResults = reservationRepository.getMonthlyRevenue();
         List<RevenueAggregationDTO> finalResults = new ArrayList<>();
-        System.out.println("monthly report: " + rawResults);
 
         for (Object[] row : rawResults) {
             String period = (String) row[0];
-            System.out.println("monthly period: " + period);
 
             double revenue = row[1] instanceof BigDecimal ?
                     ((BigDecimal) row[1]).doubleValue() :
                     Double.parseDouble(row[1].toString());
 
-            System.out.println("monthly revenue: " + revenue);
 
             RevenueAggregationDTO dto = new RevenueAggregationDTO();
             dto.setPeriod(period);
