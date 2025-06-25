@@ -50,8 +50,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
             "JOIN FETCH r.guest g " +
             "JOIN FETCH r.room rm " +
             "JOIN FETCH rm.roomType rt " +
-            "LEFT JOIN FETCH  g.services s " +
-            "WHERE g.id = :guestId")
+            "LEFT JOIN FETCH  r.services s " +
+            "WHERE g.id = :guestId "+
+            "ORDER BY r.reservationId DESC")
     List<Reservation> findByGuestIdWithDetails(@Param("guestId") int guestId);
 
 

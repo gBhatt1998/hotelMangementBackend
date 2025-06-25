@@ -12,6 +12,8 @@ public class ReservationDetailsResponse {
     private String roomTypeName;
     private List<String> serviceNames;
     private GuestDetails guest; // Add guest details to every response
+    private boolean canDelete;
+
 
     public static class GuestDetails {
         private int id;
@@ -47,4 +49,12 @@ public class ReservationDetailsResponse {
     public void setServiceNames(List<String> serviceNames) { this.serviceNames = serviceNames; }
     public GuestDetails getGuest() { return guest; }
     public void setGuest(GuestDetails guest) { this.guest = guest; }
+    // Getter and Setter
+    public boolean isCanDelete() {
+        return canDelete;
+    }
+
+    public void setCanDelete(boolean canDelete) {
+        this.canDelete = canDelete;
+    }
 }

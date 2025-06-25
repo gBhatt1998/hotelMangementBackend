@@ -121,6 +121,7 @@ public class ReservationDetailsResponseService {
         dto.setTotalPrice(r.getTotalPrice());
         dto.setRoomNumber(r.getRoom().getRoomNo());
         dto.setRoomTypeName(r.getRoom().getRoomTypeId().getType());
+        dto.setCanDelete(r.getCheckOutDate().toLocalDate().isAfter(LocalDate.now()));
 
         // Services
         List<String> serviceNames = r.getServices() != null ?
