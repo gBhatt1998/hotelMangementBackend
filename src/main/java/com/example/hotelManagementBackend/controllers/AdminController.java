@@ -52,11 +52,7 @@ public class AdminController {
     }
 
 
-    @GetMapping("/analytics/department-employee-count")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Map<String, Object>>> getEmployeeCountByDepartment() {
-        return ResponseEntity.ok(adminService.getEmployeeCountPerDepartment());
-    }
+
 
     @GetMapping("/filtered")
     public ResponseEntity<List<ReservationDetailsResponse>> getFilteredReservations(

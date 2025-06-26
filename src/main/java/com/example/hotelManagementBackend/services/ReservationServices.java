@@ -29,23 +29,6 @@ public class ReservationServices {
 
 
 
-    public RoomType createRoomType( RoomType roomType){
-      return roomTypeRepo.save(roomType);
-    }
-
-
-
-    public Room addRoom(int id, Room room){
-        Optional<RoomType> r = roomTypeRepo.findById(id);
-        if(r.isPresent()){
-            RoomType roomType = r.get();
-            room.setRoomTypeId(roomType);
-            return roomRepo.save(room);
-        }else {
-            throw new RuntimeException("Invalid Room");
-        }
-    }
-
 
 
 

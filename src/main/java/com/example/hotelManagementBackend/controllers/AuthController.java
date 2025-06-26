@@ -9,6 +9,7 @@ import com.example.hotelManagementBackend.dto.SignupRequestDTO;
 import com.example.hotelManagementBackend.entities.Guest;
 import com.example.hotelManagementBackend.repositories.GuestRepository;
 import com.example.hotelManagementBackend.services.GuestService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
 
@@ -41,7 +42,7 @@ public class AuthController {
     @Autowired
     private GuestService guestService;
 
-
+    @Operation(summary = "Login For Existing User  ")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
         try {
@@ -60,7 +61,7 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
-
+    @Operation(summary = "Sign UP For New User")
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequestDTO signupRequest) {
         Guest guest = guestService.registerGuest(signupRequest);

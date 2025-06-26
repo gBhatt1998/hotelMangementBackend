@@ -7,20 +7,24 @@ import com.example.hotelManagementBackend.dto.RoomResponseDTO;
 import com.example.hotelManagementBackend.entities.Room;
 import com.example.hotelManagementBackend.mapper.RoomMapper;
 import com.example.hotelManagementBackend.services.RoomService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/admin/rooms")
+@RequestMapping("/rooms")
+@PreAuthorize("hasRole('ADMIN')")
 public class RoomController {
     @Autowired private RoomService service;
 
+    @Operation(summary = " Load Room On Admin Dashboard ")
     @GetMapping
     public ResponseEntity<List<RoomResponseDTO>> getAllRooms(@RequestParam(required = false) String roomType) {
         List<RoomResponseDTO> rooms;
@@ -32,12 +36,7 @@ public class RoomController {
         return ResponseEntity.ok(rooms);
     }
 
-
-//    @PostMapping
-//    public ResponseEntity<RoomResponseDTO> create(@RequestBody RoomRequestDTO dto) {
-//        return new ResponseEntity<>(RoomMapper.toResponseDTO(service.createRoom(dto), true), HttpStatus.CREATED);
-//    }
-
+    @Operation(summary = "Create  Rooms In Bunch ")
     @PostMapping("/batch")
     public ResponseEntity<List<RoomResponseDTO>> createRooms(@RequestBody RoomListRequestDTO dto) {
         List<Room> savedRooms = service.createRooms(dto.getRooms());
@@ -47,7 +46,7 @@ public class RoomController {
                         .collect(Collectors.toList()));
     }
 
-
+    @Operation(summary = "Delete Existing Room  ")
     @DeleteMapping("/{roomNo}")
     public ResponseEntity<Void> delete(@PathVariable int roomNo) {
 //        System.out.println(" delte called for roomNo: " + roomNo);
@@ -65,7 +64,7 @@ public class RoomController {
 //    public ResponseEntity<Integer> suggestNextRoomNumber(@PathVariable int roomTypeId) {
 //        return ResponseEntity.ok(service.suggestNextRoomNumber(roomTypeId));
 //    }
-
+@Operation(summary = "Suggest Room Number Based On Requirement")
     @GetMapping("/suggest-room-numbers")
     public ResponseEntity<List<Integer>> suggestRoomNumbers(
             @RequestParam int roomTypeId,

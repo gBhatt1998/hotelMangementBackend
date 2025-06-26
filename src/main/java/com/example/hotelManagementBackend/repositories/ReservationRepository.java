@@ -92,6 +92,7 @@ AND (
     r.checkOutDate >= :dateRangeStart
   ))
 )
+ORDER BY  r.reservationId DESC
 """)
     List<Reservation> findByRoomTypeAndDateRange(
             @Param("roomType") String roomType,

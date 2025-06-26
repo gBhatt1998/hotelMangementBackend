@@ -17,7 +17,7 @@ import java.sql.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/room-types")
+@RequestMapping("/room-numbers")
 public class RoomTypeController {
 
     @Autowired
