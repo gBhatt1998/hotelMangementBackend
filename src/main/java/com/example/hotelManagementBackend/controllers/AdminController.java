@@ -51,7 +51,7 @@ public class AdminController {
         return ResponseEntity.ok(reservations);
     }
 
-    @GetMapping("/ ")
+    @GetMapping("/filtered")
     public ResponseEntity<List<ReservationDetailsResponse>> getFilteredReservations(
             @RequestParam(required = false) String roomTypeName,
             @RequestParam String dateFilter,
