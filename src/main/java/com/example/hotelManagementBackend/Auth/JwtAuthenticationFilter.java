@@ -20,17 +20,7 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) {
-//        String path = request.getRequestURI();
-//        return path.startsWith("/v3/api-docs") ||
-//                path.startsWith("/swagger-ui") ||
-//                path.startsWith("/swagger-resources") ||
-//                path.startsWith("/webjars") ||
-//                path.equals("/swagger-ui.html") ||
-//                path.equals("/auth/login") ||
-//                path.equals("/register");
-//    }
+
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -43,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String path = request.getServletPath();
 
-        // Skip JWT validation for these endpoints
         if (path.equals("/api/auth/login") ) {
             filterChain.doFilter(request, response);
             return;
@@ -76,17 +65,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
 }
-
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-//        String path = request.getRequestURI();
-//        return path.startsWith("/v3/api-docs") ||
-//                path.startsWith("/swagger-ui") ||
-//                path.startsWith("/swagger-resources") ||
-//                path.startsWith("/webjars") ||
-//                path.equals("/swagger-ui.html") ||
-//                path.equals("/auth/login") ||
-//                path.equals("/register");
-//    }
 
 }

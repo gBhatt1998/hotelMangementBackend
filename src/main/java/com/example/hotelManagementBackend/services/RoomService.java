@@ -35,9 +35,6 @@ public class RoomService {
         this.reservationRepo = reservationRepo;
     }
 
-    public List<Room> getAllRooms() {
-        return roomRepo.findAll();
-    }
 
     public List<RoomResponseDTO> getAllRoomsWithDeleteFlag() {
         return roomRepo.findAll().stream()
@@ -96,23 +93,22 @@ public List<Room> createRooms(List<RoomRequestDTO> dtos) {
         int current = baseRoomNo;
 
         while (finalSuggestions.size() < count) {
-            // Generate next batch of candidates
+            //  next batch
             List<Integer> candidates = new ArrayList<>();
             for (int i = 0; i < (count - finalSuggestions.size()); i++) {
                 candidates.add(current + i);
             }
 
-            // Check which candidates already exist
+            //  which room number already exist
             List<Integer> existing = roomRepo.findExistingRoomNos(candidates);
 
-            // Filter out existing ones
+            // filter out existing ones
             for (int num : candidates) {
                 if (!existing.contains(num)) {
                     finalSuggestions.add(num);
                 }
             }
 
-            // Move the base for next batch
             current += candidates.size();
 
 

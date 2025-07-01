@@ -15,7 +15,7 @@ public interface GuestRepository extends JpaRepository<Guest,Integer> {
     Optional<Guest> findByEmail(String email);
 
 
-    boolean existsById(int id); // already built-in if you use JpaRepository
+    boolean existsById(int id);
 
     @Modifying
     @Transactional

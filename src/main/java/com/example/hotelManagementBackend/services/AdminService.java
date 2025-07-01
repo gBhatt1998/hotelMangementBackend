@@ -71,9 +71,6 @@ public class AdminService {
 
     }
 
-    public List<Map<String, Object>> getEmployeeCountPerDepartment() {
-        return departmentRepository.countEmployeesByDepartment();
-    }
 
 
 

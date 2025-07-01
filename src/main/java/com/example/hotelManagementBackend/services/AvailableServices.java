@@ -15,7 +15,7 @@ public class AvailableServices {
     private ServiceRepository serviceRepository;
 
     public List<Service> getAllService(){
-        List<Service> services=serviceRepository.findAll();
+//        List<Service> services=serviceRepository.findAll();
         return serviceRepository.findAll();
     }
 }

@@ -63,7 +63,7 @@ public class AnalyticsService {
         monthMap.put(12, "December");
 
         for (Object[] row : rawResults) {
-            int yearWeek = Integer.parseInt(row[0].toString()); // e.g., 202528
+            int yearWeek = Integer.parseInt(row[0].toString()); // eg: 202528
             double revenue = row[1] instanceof BigDecimal ?
                     ((BigDecimal) row[1]).doubleValue() :
                     Double.parseDouble(row[1].toString());

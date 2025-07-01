@@ -12,8 +12,6 @@ public interface DepartmentRepository extends JpaRepository<Department,Integer> 
 
     Optional<Department> findByNameIgnoreCase(String name);
 
-    @Query("SELECT new map(d.name as department, SIZE(d.employees) as employeeCount) FROM Department d")
-    List<Map<String, Object>> countEmployeesByDepartment();
 
 
 }

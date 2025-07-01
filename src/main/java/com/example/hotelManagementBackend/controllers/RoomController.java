@@ -49,7 +49,6 @@ public class RoomController {
     @Operation(summary = "Delete Existing Room  ")
     @DeleteMapping("/{roomNo}")
     public ResponseEntity<Void> delete(@PathVariable int roomNo) {
-//        System.out.println(" delte called for roomNo: " + roomNo);
 
         try {
             service.deleteRoom(roomNo);
@@ -60,10 +59,7 @@ public class RoomController {
     }
 
 
-//    @GetMapping("/suggest-next/{roomTypeId}")
-//    public ResponseEntity<Integer> suggestNextRoomNumber(@PathVariable int roomTypeId) {
-//        return ResponseEntity.ok(service.suggestNextRoomNumber(roomTypeId));
-//    }
+
 @Operation(summary = "Suggest Room Number Based On Requirement")
     @GetMapping("/suggest-room-numbers")
     public ResponseEntity<List<Integer>> suggestRoomNumbers(

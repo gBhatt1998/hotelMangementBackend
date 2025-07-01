@@ -34,9 +34,8 @@ public interface RoomTypeRepository extends JpaRepository<RoomType,Integer> {
             "rt.id, rt.type, rt.description, rt.pricePerNight, MIN(r.roomNo), rt.imageUrl) " +
             "FROM Room r " +
             "JOIN r.roomType rt " +
-            "WHERE r.availability = true " + // <-- add space at the end
+            "WHERE r.availability = true " +
             "GROUP BY rt.id, rt.type, rt.description, rt.pricePerNight, rt.imageUrl")
     List<RoomTypeWithSingleRoomDTO> getAllRoomTypesWithMinimumRoomNo();
-
 
 }
