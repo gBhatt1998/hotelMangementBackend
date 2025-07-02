@@ -26,46 +26,7 @@ public class ReservationDetailsResponseService {
     @Autowired
     private GuestRepository guestRepository;
 
-    // ReservationServices.java
-    public List<ReservationDetailsResponse> getAllReservationDetails(String roomType) {
-        List<Reservation> reservations = reservationRepository.findAllWithDetailsFiltered(
-                (roomType == null || roomType.isEmpty()) ? null : roomType
-        );
 
-        return reservations.stream()
-                .map(this::mapToDetailsResponse)
-                .toList();
-    }
-
-    private ReservationDetailsResponse mapToDetailsResponse(Reservation reservation) {
-        ReservationDetailsResponse response = new ReservationDetailsResponse();
-        response.setReservationId((long) reservation.getReservationId());
-        response.setCheckInDate(reservation.getCheckInDate());
-        response.setCheckOutDate(reservation.getCheckOutDate());
-        response.setTotalPrice(reservation.getTotalPrice());
-
-        // Room details
-        response.setRoomNumber(reservation.getRoom().getRoomNo());
-        response.setRoomTypeName(reservation.getRoom().getRoomTypeId().getType());
-
-        // Service names
-        response.setServiceNames(reservation.getGuest().getServices().stream()
-                .map(Service::getName)
-                        .distinct()
-                .toList());
-
-        // Guest details
-        Guest guest = reservation.getGuest();
-        ReservationDetailsResponse.GuestDetails guestDetails =
-                new ReservationDetailsResponse.GuestDetails();
-        guestDetails.setId(guest.getId());
-        guestDetails.setName(guest.getName());
-        guestDetails.setEmail(guest.getEmail());
-        guestDetails.setPhone(guest.getPhone());
-        response.setGuest(guestDetails);
-
-        return response;
-    }
 
 
 

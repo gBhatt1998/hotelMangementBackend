@@ -3,6 +3,7 @@ package com.example.hotelManagementBackend.controllers;
 import com.example.hotelManagementBackend.dto.ApiResponse;
 import com.example.hotelManagementBackend.dto.RoomTypeWithSingleRoomDTO;
 import com.example.hotelManagementBackend.services.ReservationServices;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -22,20 +23,21 @@ public class RoomTypeController {
 
     @Autowired
     private ReservationServices rs;
-
+    @Operation(summary = "Get current available Room Number")
     @GetMapping("/available")
     public ResponseEntity<ApiResponse<List<RoomTypeWithSingleRoomDTO>>> getAvailableRoomTypesWithOneRoomEach() {
         List<RoomTypeWithSingleRoomDTO> data = rs.getAvailableRoom();
         return ResponseEntity.ok(new ApiResponse<>("success", "Available room types with one room each", data));
     }
 
+    @Operation(summary = "Get Room Number By Date Range")
     @GetMapping("/available/by-date")
     public ResponseEntity<ApiResponse<List<RoomTypeWithSingleRoomDTO>>> getAvailableRoomsByDate(
             @RequestParam("checkIn") String checkInStr,
             @RequestParam("checkOut") String checkOutStr) {
 
         try {
-            Date checkIn = Date.valueOf(checkInStr); // Accepts yyyy-MM-dd
+            Date checkIn = Date.valueOf(checkInStr); //  yyyy-MM-dd
             Date checkOut = Date.valueOf(checkOutStr);
             List<RoomTypeWithSingleRoomDTO> available = rs.getAvailableRoomOutsideDateRange(checkIn, checkOut);
             return ResponseEntity.ok(new ApiResponse<>("success", "Available rooms in date range", available));

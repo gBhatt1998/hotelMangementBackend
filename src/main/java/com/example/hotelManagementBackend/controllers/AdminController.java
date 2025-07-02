@@ -39,18 +39,7 @@ public class AdminController {
     }
 
 
-    @GetMapping("/allreservation")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ReservationDetailsResponse>> getGuestReservations(
-            @RequestParam(required = false) String roomType,
-            @AuthenticationPrincipal GuestDetails guestDetails) {
-
-        List<ReservationDetailsResponse> reservations =
-                reservationDetailsResponseService.getAllReservationDetails(roomType);
-
-        return ResponseEntity.ok(reservations);
-    }
-
+    @Operation(summary = "Get All Reservation Details By Filtering")
     @GetMapping("/filtered")
     public ResponseEntity<List<ReservationDetailsResponse>> getFilteredReservations(
             @RequestParam(required = false) String roomTypeName,

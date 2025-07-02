@@ -51,7 +51,6 @@ public class ConfirmReservationService {
 
 
 
-        // 💼 Fetch selected services
         List<Service> selectedServices = new ArrayList<>();
         if (request.getServiceIds() != null && !request.getServiceIds().isEmpty()) {
             selectedServices = serviceRepo.findAllById(request.getServiceIds());
@@ -79,7 +78,7 @@ public class ConfirmReservationService {
         reservation.setRoom(room);
         reservation.setGuest(guest);
         reservation.setTotalPrice(request.getTotalPrice());
-        reservation.setServices(selectedServices); //
+        reservation.setServices(selectedServices);
 
         return reservationRepo.save(reservation);
     }
