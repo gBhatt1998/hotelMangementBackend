@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/employees")
@@ -42,4 +43,13 @@ public class EmployeeController {
         employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();
     }
+    @Operation(summary = "Auto Generate Employee Email And Password")
+    @GetMapping("/generate-credentials")
+    public Map<String, String> generateCredentials(@RequestParam String name) {
+        String email = employeeService.generateEmail(name);
+        String password = employeeService.generateSecurePassword(name);
+
+        return Map.of("email", email, "password", password);
+    }
+
 }

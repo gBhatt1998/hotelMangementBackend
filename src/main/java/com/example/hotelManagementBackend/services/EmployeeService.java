@@ -7,12 +7,15 @@ import com.example.hotelManagementBackend.entities.Department;
 import com.example.hotelManagementBackend.entities.Employee;
 import com.example.hotelManagementBackend.repositories.DepartmentRepository;
 import com.example.hotelManagementBackend.repositories.EmployeeRepository;
+import com.example.hotelManagementBackend.repositories.GuestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 @Service
 public class EmployeeService {
 
@@ -21,6 +24,9 @@ public class EmployeeService {
 
     @Autowired
     private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private GuestRepository guestRepository;
 
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
         List<Department> departments = departmentRepository.findAllById(request.getDepartmentIds());
@@ -82,5 +88,29 @@ public class EmployeeService {
                         .toList()
         );
         return dto;
+    }
+
+    public String generateEmail(String name) {
+        String baseEmail = formatNameToEmail(name);
+        String email = baseEmail;
+        int counter = 1;
+
+        while (employeeRepository.existsByEmail(email) || guestRepository.existsByEmail(email)) {
+            email = baseEmail.replace("@", counter + "@");
+            counter++;
+        }
+
+        return email;
+    }
+
+    public String generateSecurePassword(String name) {
+        String base = name.trim().toLowerCase().replaceAll("[^a-z0-9]+", ".");
+        return base + "12345";
+    }
+
+
+    private String formatNameToEmail(String name) {
+        String clean = name.trim().toLowerCase().replaceAll("[^a-z0-9]+", ".");
+        return clean + "@metropolitan.com";
     }
 }

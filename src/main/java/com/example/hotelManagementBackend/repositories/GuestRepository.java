@@ -21,4 +21,6 @@ public interface GuestRepository extends JpaRepository<Guest,Integer> {
     @Transactional
     @Query(value = "DELETE FROM guest_service WHERE guest_id = :guestId", nativeQuery = true)
     void deleteGuestServicesByGuestId(@Param("guestId") int guestId);
+
+    boolean existsByEmail(String email);
 }
