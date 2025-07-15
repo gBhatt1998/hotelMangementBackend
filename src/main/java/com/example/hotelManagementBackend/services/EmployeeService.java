@@ -10,6 +10,7 @@ import com.example.hotelManagementBackend.repositories.EmployeeRepository;
 import com.example.hotelManagementBackend.repositories.GuestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,12 +34,16 @@ public class EmployeeService {
         if (departments.isEmpty()) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Invalid Department IDs");
         }
-
+        String email = generateEmail(request.getName());
+        String hashedPassword = new BCryptPasswordEncoder().encode(generateSecurePassword(request.getName()));
         Employee employee = new Employee();
         employee.setName(request.getName());
         employee.setPosition(request.getPosition());
         employee.setHireDate(request.getHireDate());
         employee.setDepartments(departments);
+        employee.setEmail(email);
+        employee.setPassword(hashedPassword);
+        employee.setRole("ROLE_EMPLOYEE");
 
         employee = employeeRepository.save(employee);
         return convertToResponseDTO(employee);
