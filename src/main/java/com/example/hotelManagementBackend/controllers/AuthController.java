@@ -42,24 +42,44 @@ public class AuthController {
     @Autowired
     private GuestService guestService;
 
-    @Operation(summary = "Login For Existing User  ")
+//    @Operation(summary = "Login For Existing User  ")
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+//        try {
+//            authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
+//            );
+//        } catch (BadCredentialsException e) {
+//            throw new CustomException(HttpStatus.UNAUTHORIZED, "Invalid credentials.");
+//        }
+//
+//        Guest guest = guestRepository.findByEmail(authRequest.getEmail())
+//                .orElseThrow(() -> new CustomException(HttpStatus.UNAUTHORIZED, "Invalid credentials."));
+//
+//        final String token = jwtUtil.generateToken(new GuestDetails(guest));
+//
+//        return ResponseEntity.ok(new AuthResponse(token));
+//    }
+
+    @Operation(summary = "Login For Existing User")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
         try {
-            authenticationManager.authenticate(
+            // Authenticate and retrieve the authenticated user
+            var auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
             );
+
+            var userDetails = (org.springframework.security.core.userdetails.UserDetails) auth.getPrincipal();
+
+            String token = jwtUtil.generateToken(userDetails); // dynamically supports Guest or Employee
+            return ResponseEntity.ok(new AuthResponse(token));
+
         } catch (BadCredentialsException e) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "Invalid credentials.");
         }
-
-        Guest guest = guestRepository.findByEmail(authRequest.getEmail())
-                .orElseThrow(() -> new CustomException(HttpStatus.UNAUTHORIZED, "Invalid credentials."));
-
-        final String token = jwtUtil.generateToken(new GuestDetails(guest));
-
-        return ResponseEntity.ok(new AuthResponse(token));
     }
+
 
     @Operation(summary = "Sign UP For New User")
     @PostMapping("/signup")

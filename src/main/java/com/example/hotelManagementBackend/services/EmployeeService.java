@@ -29,13 +29,15 @@ public class EmployeeService {
     @Autowired
     private GuestRepository guestRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
         List<Department> departments = departmentRepository.findAllById(request.getDepartmentIds());
         if (departments.isEmpty()) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Invalid Department IDs");
         }
         String email = generateEmail(request.getName());
-        String hashedPassword = new BCryptPasswordEncoder().encode(generateSecurePassword(request.getName()));
+        String hashedPassword = passwordEncoder.encode(generateSecurePassword(request.getName()));
         Employee employee = new Employee();
         employee.setName(request.getName());
         employee.setPosition(request.getPosition());
